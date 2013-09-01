@@ -11,41 +11,34 @@ var self = module.exports = {
 		_io.set('log level', 2);
 		_io.sockets.on('connection', function (socket) {
 
-			//increase tally of all who have joined
+			if(_id > 0) {
+				var myId = 'user' + _id;
+
+				//add to list of users
+				_users[myId] = socket;
+
+				//add to queue for turn
+				_queue.push(myId);
+
+				socket.emit('welcome', { hello: myId });
+				
+				list();
+				debug();
+				setupEvents(socket);
+			}
+
 			_id++;
-			var myId = 'user' + _id;
-
-			//add to list of users
-			_users[myId] = socket;
-
-			//add to queue for turn
-			_queue.push(myId);
-
-			socket.emit('welcome', { hello: myId });
-			
-			self.list();
-
-			debug();
-			socket.on('contribute', function (data) {
-				console.log(data);
-				//_io.sockets.emit('chat', myId + ': ' + data);
-			});
-
-			socket.on('disconnect', function () {
-				delete _users[myId];
-				self.list();
-			});
 		});
 	},
-
-	list: function() {
-		var otherData = {
-			_users: getUsers(),
-			count: getUserCount()
-		};
-		_io.sockets.emit('list', otherData);
-	}
 };
+
+function list() {
+	var otherData = {
+		_users: getUsers(),
+		count: getUserCount()
+	};
+	_io.sockets.emit('list', otherData);
+}
 
 function getUsers () {
    var userIds = [];
@@ -74,4 +67,16 @@ function message(data) {
 }
 function debug() {
 	console.log(_queue);
+}
+
+function setupEvents(socket) {
+	socket.on('contribute', function (data) {
+		console.log(data);
+		//_io.sockets.emit('chat', myId + ': ' + data);
+	});
+
+	socket.on('disconnect', function () {
+		delete _users[myId];
+		self.list();
+	});	
 }
