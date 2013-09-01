@@ -1,7 +1,8 @@
 var _users = {},
 	_id = 0,
 	_io,
-	_queue = [];
+	_queue = [],
+	queueTimeout = null;
 
 var self = module.exports = {
   
@@ -9,9 +10,11 @@ var self = module.exports = {
 		console.log('init io');
 		_io = io;
 		_io.set('log level', 2);
+
+		//new connection
 		_io.sockets.on('connection', function (socket) {
 
-			if(_id > 0) {
+			// if(_id > 0) {
 				var myId = 'user' + _id;
 
 				//add to list of users
@@ -20,24 +23,34 @@ var self = module.exports = {
 				//add to queue for turn
 				_queue.push(myId);
 
-				socket.emit('welcome', { hello: myId });
+				socket.emit('welcome', myId);
+
+				socket.on('disconnect', function () {
+					console.log('deleting:', myId);
+					delete _users[myId];
+					spliceQueue(myId);
+					list();
+				});
+
+				popUser();
 				
 				list();
 				debug();
-				setupEvents(socket);
-			}
+				setupEvents(socket, myId);
+//			}
 
 			_id++;
 		});
 	},
 };
 
-function list() {
-	var otherData = {
-		_users: getUsers(),
-		count: getUserCount()
+function list(ignore) {
+	var data = {
+		queue: _queue,
+		count: getUserCount(),
+		ignore: ignore
 	};
-	_io.sockets.emit('list', otherData);
+	_io.sockets.emit('list', data);
 }
 
 function getUsers () {
@@ -69,14 +82,36 @@ function debug() {
 	console.log(_queue);
 }
 
-function setupEvents(socket) {
+function setupEvents(socket, myId) {
 	socket.on('contribute', function (data) {
 		console.log(data);
 		//_io.sockets.emit('chat', myId + ': ' + data);
 	});
+}
 
-	socket.on('disconnect', function () {
-		delete _users[myId];
-		self.list();
-	});	
+function popUser() {
+	//only pop if more than 1 person active
+	if(getUserCount() > 1) {
+		var userId = _queue[0];
+		_queue = _queue.slice(1,_queue.length);
+		_queue.push(userId);
+		if(_users[userId]) {
+			var data = {
+				message: 'your turn'
+			};
+			_users[userId].emit('yourTurn');
+			list(userId);
+		}	
+	}
+}
+
+function spliceQueue(id) {
+	for(var i = 0; i < _queue.length; i++) {
+		if(_queue[i] === id) {
+			var first = _queue.slice(0,i),
+				second = _queue.slice(i+1, _queue.length);
+			_queue = first.concat(second);
+			break;
+		}
+	}
 }

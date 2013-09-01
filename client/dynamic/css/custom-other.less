@@ -18,7 +18,42 @@ body {
 			text-align: right;	
 		}
 	}
-	.count {
-		color: @red;
-	}	
+	.info {
+		.yourTurn {
+			display: none;
+			.countdown {
+				color: @green;
+			}
+		}
+		.inQueue {
+			.countAhead {
+				color: @red;
+			}	
+		}
+	}
+}
+.story {
+	color: @gray;
+	font-family: @font-family-serif;
+	.newText {
+		display: none;
+		input {
+			color: @green;
+			border: none;
+			margin-left: 4px;
+		}
+	}
+}
+
+::-webkit-input-placeholder { /* WebKit browsers */
+    color:    @green;
+}
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+    color:    @green;
+}
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+    color:    @green;
+}
+:-ms-input-placeholder { /* Internet Explorer 10+ */
+    color:    @green;
 }
