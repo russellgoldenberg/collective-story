@@ -1,0 +1,31 @@
+{
+  "name": "collective-story",
+  "description": "an experiment in massively multiplayer online literature generation",
+  "authors": [
+    "Russell Goldenberg <@codenberg>"
+  ],
+  "private": true,
+  "main": "./bin/server",
+  "engines": {
+    "node": ">= 0.10.0"
+  },
+  "dependencies": {
+    "express": "~3.3.5",
+    "mongodb": "~1.3.19",
+    "jade": "~0.35.0",
+    "express-mongodb": "0.0.4",
+    "mongoose": "~3.6.18",
+    "less-middleware": "~0.1.12",
+    "nconf": "~0.6.7",
+    "colors": "~0.6.2"
+  },
+  "devDependencies": {
+    "mocha": "~1.12.0",
+    "should": "~1.2.2",
+    "watch": "~0.8.0"
+  },
+  "scripts": {
+    "start": "node ./bin/server"
+  },
+  "subdomain": "ramblings"
+}

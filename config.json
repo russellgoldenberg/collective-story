@@ -1,0 +1,9 @@
+{
+	"PORT": 8000,
+	"USE_MONGODB": false,
+	"MONGODB_HOST": "localhost",
+	"MONGODB_PW": "",
+	"MONGODB_DB": "treasure",
+	"CLOUD_PATH": "/",
+	"BASE_URL": "http://localhost:8000"
+}

@@ -1,0 +1,18 @@
+# matches .npmignore:
+
+/node_modules/
+.monitor
+.DS_Store
+Thumbs.db
+*.sublime-*
+/_HIDDEN/
+/resources/
+/client/code/libs/mediaelement/
+/client/static/*
+!/client/static/mu-b8e45adc-5d8bf75d-0826c8b2-ffd6ed3e.txt
+!/client/static/assets/
+!/client/static/cache.manifest
+*.log
+/client/symlinked_static
+/client/code/data/archive/
+!/client/static/mu-b8e45adc-5d8bf75d-0826c8b2-ffd6ed3e.txt
