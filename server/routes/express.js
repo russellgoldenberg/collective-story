@@ -8,7 +8,7 @@ var self = module.exports = {
 
 		app.get('/', function(req, res) {
 			res.render('app', {
-				title: 'Treasure Hunt',
+				title: 'Ramblings',
 				globals: globals
 			});
 		});

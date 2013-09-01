@@ -9,6 +9,7 @@ var rootDir = process.cwd(),
 
 	app = exports.app = express(),
 	server,
+	io,
 
 	config = require(rootDir + '/config'),
 	routes = require(rootDir + '/server/routes/express'),
@@ -17,9 +18,11 @@ var rootDir = process.cwd(),
 	// db = require(rootDir + '/server/services/db'),
 
 	// nodeEnv = config.get('ENVIRONMENT'),
-	port = config.get('PORT');
+	port = config.get('PORT'),
+	socketio = require('socket.io'),
+	ramblings = require(rootDir + '/server/rpc/ramblings');
 
-console.log('TREASURE HUNT - ARGGGGH!');
+console.log('RAMBLINGS');
 // ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ --- >>>
 // ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ --- >>> EXRESS
 // ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ --- >>>
@@ -70,7 +73,22 @@ console.log('Express configured.'.green);
 // ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ --- >>>
 
 process.on('uncaughtException', function(err) { console.log(err); });
-server = app.listen(port, function() {
-	var local = server.address();
-	console.log('Express server listening @ http://%s:%d/ in '.green + '%s'.green.inverse + ' mode\n\n'.green, local.address, local.port, app.settings.env);
-});
+
+server = http.createServer(app);
+io = socketio.listen(server);
+
+server.listen(8000);
+console.log('listening on:', 8000);
+
+ramblings.init(io);
+
+// server = app.listen(port, function() {
+// 	var local = server.address();
+// 	console.log('Express server listening @ http://%s:%d/ in '.green + '%s'.green.inverse + ' mode\n\n'.green, local.address, local.port, app.settings.env);
+// });
+
+// engineServer = engine.listen(server);
+// engineServer.on('connection', function (socket) {
+// 	console.log(socket);
+// 	// socket.send('utf 8 string');
+// });
