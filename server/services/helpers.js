@@ -5,6 +5,11 @@ var rootDir = process.cwd(),
 	command,
 	filterRE;
 
+var config = require(rootDir + '/config'),
+	mongoose = require('mongoose'),
+	Schema = mongoose.Schema,
+	ObjectId = Schema.ObjectId;
+
 if(process.platform === 'win32') {
 	command = 'ipconfig';
 	filterRE = /\bIPv[46][^:\r\n]+:\s*([^\s]+)/g;
@@ -17,6 +22,33 @@ if(process.platform === 'win32') {
 }
 
 var self = module.exports = {
+
+	db: null,
+	mongooseConnected: (mongoose.connection.readyState === 1 || mongoose.connection.readyState === 2),
+
+	connectMongoose: function(app, useMongo, callback) {
+		// connect to database
+		if(!self.mongooseConnected && useMongo) {
+			console.log('\n   * * * * * * * * * * * *   Starting Mongo DB Service   * * * * * * * * * * * *   '.yellow);
+			self.db = mongoose.createConnection(config.get('MONGO_URL'));
+			self.db.on('error', console.error.bind(console, ' CONNECTION ERROR: '.red.inverse));
+			self.db.once('open', function () {
+				console.log('   * * * * * * * * * * * *   Hollow:'.yellow + ' database connection opened in ' + app.get('env').yellow + ' environment');
+				if(typeof callback === 'function') {
+					callback({ mongooseDb: self.db });
+				}
+			});
+		} else {
+			console.log('\n   * * * * * * * * * * * *   Mongo Service Not Connected   * * * * * * * * * * * *   '.red);
+			if(typeof callback === 'function') {
+				callback();
+			}
+		}
+	},
+
+	useModel: function(modelName) {
+		return require(rootDir + '/server/models/' + modelName + '-model')(mongoose, self.db, Schema, ObjectId);
+	},
 
 	getNetworkIPs: function(callback, bypassCache) {
 		if(cached && !bypassCache) {

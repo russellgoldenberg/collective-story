@@ -12,9 +12,11 @@ var rootDir = process.cwd(),
 	io,
 
 	config = require(rootDir + '/config'),
+	useMongo = config.get('USE_MONGO'),
+
 	routes = require(rootDir + '/server/routes/express'),
 	globals = require(rootDir + '/server/services/globals'),
-	// helpers = require(rootDir + '/server/services/helpers'),
+	helpers = require(rootDir + '/server/services/helpers'),
 	// db = require(rootDir + '/server/services/db'),
 
 	// nodeEnv = config.get('ENVIRONMENT'),
@@ -26,69 +28,90 @@ console.log('RAMBLINGS');
 // ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ --- >>>
 // ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ --- >>> EXRESS
 // ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ --- >>>
+helpers.connectMongoose(app, useMongo, function(databases) {
 
-app.configure(function() {
-	app.set('port', port);
-	app.set('views', rootDir + '/client/views');
-	app.set('view engine', 'jade');
-	app.set('globals', globals.getGlobals());
-	app.use(express.favicon());
-	app.use(express.logger('dev'));
-	app.use(express.bodyParser());
-	app.use(express.methodOverride());
-	app.use(express.cookieParser('your secret here'));
-	app.use(express.session());
-	app.use(app.router);
-	//ss.client.formatters.add(require('ss-less'));
-	// app.use(stylus.middleware({
-	// 	src: rootDir + '/client/dynamic',
-	// 	dest: rootDir + '/client/static',
-	// 	compile: function(str, path) {
-	// 		return stylus(str)
-	// 			.set('filename', path)
-	// 			.set('warn', true)
-	// 			.set('compress', true);
-	// 	}
-	// }));
-	app.use(lessMiddleware({
-        src: rootDir + '/client/dynamic',
-    	dest: rootDir + '/client/static',
-        compress: true
-    }));
-	
+	app.configure(function() {
+		app.set('port', port);
+		app.set('views', rootDir + '/client/views');
+		app.set('view engine', 'jade');
+		app.set('globals', globals.getGlobals());
+		app.use(express.favicon());
+		app.use(express.logger('dev'));
+		app.use(express.bodyParser());
+		app.use(express.methodOverride());
+		app.use(express.cookieParser('your secret here'));
+		app.use(express.session());
+		app.use(app.router);
+		//ss.client.formatters.add(require('ss-less'));
+		// app.use(stylus.middleware({
+		// 	src: rootDir + '/client/dynamic',
+		// 	dest: rootDir + '/client/static',
+		// 	compile: function(str, path) {
+		// 		return stylus(str)
+		// 			.set('filename', path)
+		// 			.set('warn', true)
+		// 			.set('compress', true);
+		// 	}
+		// }));
+		app.use(lessMiddleware({
+	        src: rootDir + '/client/dynamic',
+	    	dest: rootDir + '/client/static',
+	        compress: true
+	    }));
+		
 
-	app.use(express.static(path.join(rootDir, 'client/static')));
+		app.use(express.static(path.join(rootDir, 'client/static')));
+	});
+
+	app.configure('development', function() {
+		app.use(express.errorHandler());
+	});
+
+	routes.setExpressRoutes(app);
+
+	console.log('Express configured.'.green);
+
+	// ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ --- >>>
+	// ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ --- >>> START THE SERVER
+	// ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ --- >>>
+
+	process.on('uncaughtException', function(err) { console.log(err); });
+
+	server = http.createServer(app);
+	io = socketio.listen(server);
+
+	server.listen(8000);
+	console.log('listening on:', 8000);
+
+	//add base story into DB
+	var storyModel = helpers.useModel('story');
+	storyModel.findOne(function(err,result) {
+		if(err) {
+			console.log(err);
+		} else if(result) {
+			result.story = 'Once upon a time ';
+			ramblings.init(io, helpers);
+		} else {
+			var story = new storyModel({story: 'Once upon a time '});
+			story.save(function(err, suc) {
+				if(err) {
+					console.log(err);
+				} else {
+					console.log('story ready');
+					ramblings.init(io, helpers);
+				}
+			});
+		}
+	});
+
+	// server = app.listen(port, function() {
+	// 	var local = server.address();
+	// 	console.log('Express server listening @ http://%s:%d/ in '.green + '%s'.green.inverse + ' mode\n\n'.green, local.address, local.port, app.settings.env);
+	// });
+
+	// engineServer = engine.listen(server);
+	// engineServer.on('connection', function (socket) {
+	// 	console.log(socket);
+	// 	// socket.send('utf 8 string');
+	// });
 });
-
-app.configure('development', function() {
-	app.use(express.errorHandler());
-});
-
-routes.setExpressRoutes(app);
-
-console.log('Express configured.'.green);
-
-// ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ --- >>>
-// ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ --- >>> START THE SERVER
-// ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ --- >>>
-
-process.on('uncaughtException', function(err) { console.log(err); });
-
-server = http.createServer(app);
-io = socketio.listen(server);
-
-server.listen(8000);
-console.log('listening on:', 8000);
-
-ramblings.init(io);
-
-// server = app.listen(port, function() {
-// 	var local = server.address();
-// 	console.log('Express server listening @ http://%s:%d/ in '.green + '%s'.green.inverse + ' mode\n\n'.green, local.address, local.port, app.settings.env);
-// });
-
-// engineServer = engine.listen(server);
-// engineServer.on('connection', function (socket) {
-// 	console.log(socket);
-// 	// socket.send('utf 8 string');
-// });

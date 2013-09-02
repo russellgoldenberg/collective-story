@@ -4,14 +4,27 @@ var _users = {},
 	_queue = [],
 	_queueTimeout,
 	_timeoutLength = 8000,
-	_story = 'Once ',
-	_currentTurn;
+	_story = null,
+	_currentTurn,
+	_userModel = null,
+	_storyModel = null,
+	_helpers = null;
 
 
 var self = module.exports = {
   
-	init: function(io) {
+	init: function(io, helpers) {
+		_helpers = helpers;
 		console.log('init io');
+		// _userModel = _helpers.useModel('user');
+		_storyModel = _helpers.useModel('story');
+		_storyModel.findOne(function(err, result) {
+			if(err) {
+				console.log(err);
+			} else {
+				_story = result;
+			}
+		})
 		_io = io;
 		_io.set('log level', 2);
 
@@ -29,7 +42,7 @@ var self = module.exports = {
 
 				var data = {
 					id: myId,
-					story: _story,
+					story: _story.story,
 					queue: _queue
 				};
 				socket.emit('welcome', data);
@@ -93,6 +106,7 @@ function setupEvents(socket, myId) {
 		delete _users[myId];
 		spliceQueue(myId);
 		if(_currentTurn === myId) {
+			clearTimeout(_queueTimeout);
 			_currentTurn = null;
 			popUser();
 		} else {
@@ -104,14 +118,21 @@ function setupEvents(socket, myId) {
 		//verify they are current ones
 		var spacedWord = data.word + ' ';
 		if(data.id === _currentTurn) {
-			_story += spacedWord;
-			var sendData = {
-				word: spacedWord,
-				id: data.id
-			};
-			_io.sockets.emit('addWord', sendData);
+			_story.story += spacedWord;
+
 			clearTimeout(_queueTimeout);
-			popUser();
+
+			_story.save(function(err,result) {
+				if(err) { console.log('story error:', err); }
+				else {
+					var sendData = {
+						word: spacedWord,
+						id: data.id
+					};
+					_io.sockets.emit('addWord', sendData);
+					popUser();
+				}
+			});
 		}
 	});
 
