@@ -8,3 +8,4 @@ An experiment in massively multiplayer online literature generation
 4. storage of story in DB
 5. add paragraph feature
 6. meta data on each word submitted
+7. when user submits word verify they are current turn

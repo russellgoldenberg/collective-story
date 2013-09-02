@@ -3,6 +3,7 @@ var _users = {},
 	_io,
 	_queue = [],
 	_queueTimeout,
+	_timeoutLength = 8000,
 	_story = 'Once ',
 	_currentTurn;
 
@@ -100,12 +101,22 @@ function setupEvents(socket, myId) {
 	});
 
 	socket.on('contribute', function (data) {
-		_story += data.word;
-		var sendData = {
-			word: data.word,
-			id: data.id
-		};
-		_io.sockets.emit('addWord', sendData);
+		//verify they are current ones
+		var spacedWord = data.word + ' ';
+		if(data.id === _currentTurn) {
+			_story += spacedWord;
+			var sendData = {
+				word: spacedWord,
+				id: data.id
+			};
+			_io.sockets.emit('addWord', sendData);
+			clearTimeout(_queueTimeout);
+			popUser();
+		}
+	});
+
+	socket.on('timeLimit', function () {
+		clearTimeout(_queueTimeout);
 		popUser();
 	});
 }
@@ -122,8 +133,11 @@ function popUser() {
 	}
 
 	if(_users[userId]) {
+		_queueTimeout = setTimeout(unresponsive, _timeoutLength);
 		sendQueue();
 	}
+
+	//start backup timeout clock
 }
 
 function spliceQueue(id) {
@@ -135,4 +149,14 @@ function spliceQueue(id) {
 			break;
 		}
 	}
+}
+
+function unresponsive() {
+	//TODO add warning
+	clearTimeout(_queueTimeout);
+	console.log('unresponsive:', _currentTurn);
+	delete _users[_currentTurn];
+	spliceQueue(_currentTurn);
+	_currentTurn = null;
+	popUser();
 }
