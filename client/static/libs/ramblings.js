@@ -42,6 +42,12 @@ var socket,
 				story = $('.storyText').text() + data.word;
 				$('.storyText').text(story);
 			});
+			socket.on('boot', function () {
+				apprise('You have timed out twice, you are now a mere spectator.');
+			});
+			socket.on('warning', function () {
+				apprise('You took too long to contribute during your turn, back of the line!');
+			});
 
 			setupEvents();
 		}

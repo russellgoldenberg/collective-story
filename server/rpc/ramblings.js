@@ -103,8 +103,7 @@ function debug() {
 function setupEvents(socket, myId) {
 	socket.on('disconnect', function () {
 		console.log('deleting:', myId);
-		delete _users[myId];
-		spliceQueue(myId);
+		deleteUser(myId);
 		if(_currentTurn === myId) {
 			clearTimeout(_queueTimeout);
 			_currentTurn = null;
@@ -137,9 +136,21 @@ function setupEvents(socket, myId) {
 	});
 
 	socket.on('timeLimit', function () {
+		warnOrBoot(socket, myId);
 		clearTimeout(_queueTimeout);
 		popUser();
 	});
+}
+
+function warnOrBoot(socket, myId) {
+	//if they were already warned, boot em
+	if(_users[myId].warning) {
+		_users[myId].emit('boot');
+		deleteUser(myId);
+	} else {
+		_users[myId].emit('warning');
+		_users[myId].warning = true;
+	}
 }
 
 function popUser() {
@@ -176,8 +187,12 @@ function unresponsive() {
 	//TODO add warning
 	clearTimeout(_queueTimeout);
 	console.log('unresponsive:', _currentTurn);
-	delete _users[_currentTurn];
-	spliceQueue(_currentTurn);
+	deleteUser(_currentTurn);
 	_currentTurn = null;
 	popUser();
+}
+
+function deleteUser(id) {
+	delete _users[id];
+	spliceQueue(id);
 }
