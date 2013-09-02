@@ -1,5 +1,6 @@
 body {
-	padding-top: 70px;
+	// padding-top: 70px;
+	padding-top: 30px;
 }
 .header {
 	text-align: center;
@@ -22,11 +23,13 @@ body {
 		.yourTurn {
 			display: none;
 			.countdown {
-				color: @green;
+				font-size: 1.8em;
+				color: @blue;
 			}
 		}
 		.inQueue {
 			.countAhead {
+				font-size: 1.8em;
 				color: @red;
 			}	
 		}
@@ -41,7 +44,7 @@ body {
 	.newText {
 		display: none;
 		input {
-			color: @green;
+			color: @blue;
 			border: none;
 			margin-left: 4px;
 			outline: none;
@@ -50,16 +53,16 @@ body {
 }
 
 ::-webkit-input-placeholder { /* WebKit browsers */
-    color:    @green;
+    color:    @blue;
 }
 :-moz-placeholder { /* Mozilla Firefox 4 to 18 */
-    color:    @green;
+    color:    @blue;
 }
 ::-moz-placeholder { /* Mozilla Firefox 19+ */
-    color:    @green;
+    color:    @blue;
 }
 :-ms-input-placeholder { /* Internet Explorer 10+ */
-    color:    @green;
+    color:    @blue;
 }
 .contribution {
 	display: none;
