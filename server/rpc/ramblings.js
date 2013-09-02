@@ -2,7 +2,10 @@ var _users = {},
 	_id = 0,
 	_io,
 	_queue = [],
-	queueTimeout = null;
+	_queueTimeout,
+	_story = 'Once ',
+	_currentTurn;
+
 
 var self = module.exports = {
   
@@ -23,19 +26,18 @@ var self = module.exports = {
 				//add to queue for turn
 				_queue.push(myId);
 
-				socket.emit('welcome', myId);
+				var data = {
+					id: myId,
+					story: _story,
+					queue: _queue
+				};
+				socket.emit('welcome', data);
+				//if no one is going, pop new
+				if(!_currentTurn) {
+					popUser();
+				}
 
-				socket.on('disconnect', function () {
-					console.log('deleting:', myId);
-					delete _users[myId];
-					spliceQueue(myId);
-					list();
-				});
-
-				popUser();
-				
-				list();
-				debug();
+				//debug();
 				setupEvents(socket, myId);
 //			}
 
@@ -44,13 +46,14 @@ var self = module.exports = {
 	},
 };
 
-function list(ignore) {
+function sendQueue() {
 	var data = {
 		queue: _queue,
-		count: getUserCount(),
-		ignore: ignore
+		count: _queue.length,
+		turn: _currentTurn
 	};
-	_io.sockets.emit('list', data);
+	console.log('sendQueue:', data);
+	_io.sockets.emit('sendQueue', data);
 }
 
 function getUsers () {
@@ -75,33 +78,51 @@ function getUserCount() {
 
 function message(data) {
 	if(_users[data.id]) {
-		_users[data.id].emit('message', data.message); 	
+		_users[data.id].emit('message', data.message);
 	}
 }
+
 function debug() {
 	console.log(_queue);
 }
 
 function setupEvents(socket, myId) {
+	socket.on('disconnect', function () {
+		console.log('deleting:', myId);
+		delete _users[myId];
+		spliceQueue(myId);
+		if(_currentTurn === myId) {
+			_currentTurn = null;
+			popUser();
+		} else {
+			sendQueue();
+		}
+	});
+
 	socket.on('contribute', function (data) {
-		console.log(data);
-		//_io.sockets.emit('chat', myId + ': ' + data);
+		_story += data.word;
+		var sendData = {
+			word: data.word,
+			id: data.id
+		};
+		_io.sockets.emit('addWord', sendData);
+		popUser();
 	});
 }
 
 function popUser() {
-	//only pop if more than 1 person active
+
+	var userId = _queue[0];
+	_currentTurn = userId;
+
+	//only do shuffling of more than 1 person
 	if(getUserCount() > 1) {
-		var userId = _queue[0];
 		_queue = _queue.slice(1,_queue.length);
 		_queue.push(userId);
-		if(_users[userId]) {
-			var data = {
-				message: 'your turn'
-			};
-			_users[userId].emit('yourTurn');
-			list(userId);
-		}	
+	}
+
+	if(_users[userId]) {
+		sendQueue();
 	}
 }
 

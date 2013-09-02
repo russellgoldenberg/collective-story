@@ -26,6 +26,7 @@ block content
                     p.yourTurn You have 
                         span.countdown 
                         |  seconds remaining
+                    p.onDeck You are up next!
                 .col-xs-3.nav
                     p About
 
@@ -35,6 +36,10 @@ block content
                     p An experiment in massively multiplayer online literature generation
             .row
                 .col-md-12
-                    p.story Parsnip sweet pepper celtuce arugula aubergine celery burdock yarrow parsnip black-eyed pea broccoli endive jícama bok choy dulse napa cabbage. Turnip greens beetroot dulse watercress caulie chickpea tomatillo cabbage garbanzo aubergine radicchio celery pumpkin earthnut pea tigernut daikon wakame. Daikon coriander bamboo shoot amaranth courgette cauliflower artichoke corn chickpea kombu fennel watercress wattle seed mustard seakale komatsuna earthnut pea.
+                    p.story
+                        span.storyText
                         span.newText
                             input#word(placeholder='enter word here...')
+                .col-md-12
+                    p.contribution
+                        button.contribute.btn.btn-primary Contribute
