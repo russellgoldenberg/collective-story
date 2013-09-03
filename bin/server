@@ -89,7 +89,8 @@ helpers.connectMongoose(app, useMongo, function(databases) {
 		if(err) {
 			console.log(err);
 		} else if(result) {
-			result.story = 'Once upon a time ';
+			result.paragraph = 'Once upon a time ';
+			result.index = 0;
 			result.save(function(err, suc) {
 				if(err) {
 					console.log(err);
@@ -99,7 +100,7 @@ helpers.connectMongoose(app, useMongo, function(databases) {
 				}
 			});
 		} else {
-			var story = new storyModel({story: 'Once upon a time '});
+			var story = new storyModel({paragraph: 'Once upon a time ', index: 0});
 			story.save(function(err, suc) {
 				if(err) {
 					console.log(err);

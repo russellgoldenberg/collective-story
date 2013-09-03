@@ -42,7 +42,7 @@ var self = module.exports = {
 
 				var data = {
 					id: myId,
-					story: _story.story,
+					story: _story.paragraph,
 					queue: _queue,
 					timer: _timeoutLength
 				};
@@ -118,7 +118,7 @@ function setupEvents(socket, myId) {
 		//verify they are current ones
 		var spacedWord = data.word + ' ';
 		if(data.id === _currentTurn) {
-			_story.story += spacedWord;
+			_story.paragraph += spacedWord;
 
 			clearTimeout(_queueTimeout);
 
