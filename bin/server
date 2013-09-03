@@ -90,7 +90,14 @@ helpers.connectMongoose(app, useMongo, function(databases) {
 			console.log(err);
 		} else if(result) {
 			result.story = 'Once upon a time ';
-			ramblings.init(io, helpers);
+			result.save(function(err, suc) {
+				if(err) {
+					console.log(err);
+				} else {
+					console.log('story ready');
+					ramblings.init(io, helpers);
+				}
+			});
 		} else {
 			var story = new storyModel({story: 'Once upon a time '});
 			story.save(function(err, suc) {

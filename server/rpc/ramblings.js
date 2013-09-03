@@ -3,7 +3,7 @@ var _users = {},
 	_io,
 	_queue = [],
 	_queueTimeout,
-	_timeoutLength = 8000,
+	_timeoutLength = 25000,
 	_story = null,
 	_currentTurn,
 	_userModel = null,
@@ -30,10 +30,10 @@ var self = module.exports = {
 
 		//new connection
 		_io.sockets.on('connection', function (socket) {
-
 			// if(_id > 0) {
 				var myId = 'user' + _id;
 
+				console.log(myId, 'connected');
 				//add to list of users
 				_users[myId] = socket;
 
@@ -43,7 +43,8 @@ var self = module.exports = {
 				var data = {
 					id: myId,
 					story: _story.story,
-					queue: _queue
+					queue: _queue,
+					timer: _timeoutLength
 				};
 				socket.emit('welcome', data);
 				//if no one is going, pop new

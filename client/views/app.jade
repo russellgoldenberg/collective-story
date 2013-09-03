@@ -19,13 +19,14 @@ block content
         .container
             .row.topBar
                 .col-md-12.info
-                    p.inQueue There are 
+                    p.message.inQueue There are 
                         span.countAhead
                         |  people ahead of you
-                    p.yourTurn You have 
+                    p.message.yourTurn You have 
                         span.countdown 
                         |  seconds remaining
-                    p.onDeck You are up next!
+                    p.message.onDeck You are up next!
+                    p.message.booted You are a fly on the way
 
             .row
                 .col-md-12.header
@@ -36,7 +37,9 @@ block content
                     p.story
                         span.storyText
                         span.newText
-                            input#word(placeholder='enter word here...')
+                            input#word(placeholder='enter word here...', maxlength='23')
+                    p.newParagraph
+                        button.newParaButton.btn.btn-primary &para;
                 .col-md-12
                     p.contribution
-                        button.contribute.btn.btn-primary Contribute
+                        button.contribute.btn Contribute

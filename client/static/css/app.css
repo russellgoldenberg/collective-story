@@ -837,10 +837,13 @@ th.visible-print,td.visible-print{display:none !important}
 .header{text-align:center}.header p{color:#999;padding-bottom:30px;border-bottom:1px dashed #999}
 .topBar p{margin:0}
 .topBar .nav p{text-align:right}
+.topBar .info .message{color:#555}
 .topBar .info .yourTurn{display:none}.topBar .info .yourTurn .countdown{font-size:1.8em;color:#7cccc9}
 .topBar .info .inQueue .countAhead{font-size:1.8em;color:#f52e47}
 .topBar .info .onDeck{display:none}
-.story{color:#555;font-family:"Lora",Georgia,"Times New Roman",Times,serif}.story .newText{display:none}.story .newText input{color:#7cccc9;border:none;margin-left:4px;outline:none}
+.topBar .info .booted{display:none}
+.story{color:#555;font-family:"Lora",Georgia,"Times New Roman",Times,serif}.story .newText{display:none}.story .newText #word{color:#7cccc9;border:none;margin-left:2px;outline:none}
+.newParagraph{display:none;font-family:sans-serif;line-height:1.2}.newParagraph .newParaButton{padding:2px 10px}
 ::-webkit-input-placeholder{color:#7cccc9}
 :-moz-placeholder{color:#7cccc9}
 ::-moz-placeholder{color:#7cccc9}

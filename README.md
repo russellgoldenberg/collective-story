@@ -2,7 +2,6 @@
 An experiment in massively multiplayer online literature generation
 
 ##TODO
-send message to user if they are booted
 refine input evaluation (restrict to 1 word)
 add paragraph feature
 meta data on each word submitted
