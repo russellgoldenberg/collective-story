@@ -24,37 +24,25 @@ var self = module.exports = {
 			} else {
 				_story = result;
 			}
-		})
+		});
 		_io = io;
 		_io.set('log level', 2);
 
 		//new connection
 		_io.sockets.on('connection', function (socket) {
-			// if(_id > 0) {
-				var myId = 'user' + _id;
 
-				console.log(myId, 'connected');
-				//add to list of users
-				_users[myId] = socket;
+			var newUser = 'user ' + _id + ' joined';
+			console.log(newUser);
 
-				//add to queue for turn
-				_queue.push(myId);
+			var data = {
+				story: _story.paragraph,
+				timer: _timeoutLength,
+				count: _queue.length
+			};
 
-				var data = {
-					id: myId,
-					story: _story.paragraph,
-					queue: _queue,
-					timer: _timeoutLength
-				};
-				socket.emit('welcome', data);
-				//if no one is going, pop new
-				if(!_currentTurn) {
-					popUser();
-				}
-
-				//debug();
-				setupEvents(socket, myId);
-//			}
+			socket.emit('welcome', data);
+			
+			setupJoin(socket);
 
 			_id++;
 		});
@@ -71,20 +59,10 @@ function sendQueue() {
 	_io.sockets.emit('sendQueue', data);
 }
 
-function getUsers () {
-   var userIds = [];
-   for(var id in _users) {
-     if(_users[id]) {
-       userIds.push(id);
-     }
-   }
-   return userIds;
-}
-
 function getUserCount() {
 	var count = 0;
-	for(var id in _users) {
-		if(_users[id]) {
+	for(var name in _users) {
+		if(_users[name]) {
 			count++;
 		}
 	}
@@ -92,8 +70,8 @@ function getUserCount() {
 }
 
 function message(data) {
-	if(_users[data.id]) {
-		_users[data.id].emit('message', data.message);
+	if(_users[data.name]) {
+		_users[data.name].emit('message', data.message);
 	}
 }
 
@@ -101,11 +79,34 @@ function debug() {
 	console.log(_queue);
 }
 
-function setupEvents(socket, myId) {
+function setupJoin(socket) {
+	socket.on('join', function(name) {
+		//TODO check db for names
+		if(name) {
+			//setup other socket events
+			setupEvents(socket, name);
+			//add to list of users
+			_users[name] = socket;
+
+			socket.emit('joinResponse', {name: name, join: true});
+
+			//add to queue for turn
+			_queue.push(name);
+
+			//if no one is going, pop new
+			if(!_currentTurn) {
+				popUser();
+			}	
+		}
+	});
+}
+
+function setupEvents(socket, name) {
+
 	socket.on('disconnect', function () {
-		console.log('deleting:', myId);
-		deleteUser(myId);
-		if(_currentTurn === myId) {
+		console.log('deleting:', name);
+		deleteUser(name);
+		if(_currentTurn === name) {
 			clearTimeout(_queueTimeout);
 			_currentTurn = null;
 			popUser();
@@ -117,7 +118,7 @@ function setupEvents(socket, myId) {
 	socket.on('contribute', function (data) {
 		//verify they are current ones
 		var spacedWord = data.word + ' ';
-		if(data.id === _currentTurn) {
+		if(data.name === _currentTurn) {
 			_story.paragraph += spacedWord;
 
 			clearTimeout(_queueTimeout);
@@ -127,7 +128,7 @@ function setupEvents(socket, myId) {
 				else {
 					var sendData = {
 						word: spacedWord,
-						id: data.id
+						name: data.name
 					};
 					_io.sockets.emit('addWord', sendData);
 					popUser();
@@ -137,35 +138,35 @@ function setupEvents(socket, myId) {
 	});
 
 	socket.on('timeLimit', function () {
-		warnOrBoot(socket, myId);
+		warnOrBoot(socket, name);
 		clearTimeout(_queueTimeout);
 		popUser();
 	});
 }
 
-function warnOrBoot(socket, myId) {
+function warnOrBoot(socket, name) {
 	//if they were already warned, boot em
-	if(_users[myId].warning) {
-		_users[myId].emit('boot');
-		deleteUser(myId);
+	if(_users[name].warning) {
+		_users[name].emit('boot');
+		deleteUser(name);
 	} else {
-		_users[myId].emit('warning');
-		_users[myId].warning = true;
+		_users[name].emit('warning');
+		_users[name].warning = true;
 	}
 }
 
 function popUser() {
 
-	var userId = _queue[0];
-	_currentTurn = userId;
+	var name = _queue[0];
+	_currentTurn = name;
 
 	//only do shuffling of more than 1 person
 	if(getUserCount() > 1) {
 		_queue = _queue.slice(1,_queue.length);
-		_queue.push(userId);
+		_queue.push(name);
 	}
 
-	if(_users[userId]) {
+	if(_users[name]) {
 		_queueTimeout = setTimeout(unresponsive, _timeoutLength);
 		sendQueue();
 	}
@@ -173,9 +174,9 @@ function popUser() {
 	//start backup timeout clock
 }
 
-function spliceQueue(id) {
+function spliceQueue(name) {
 	for(var i = 0; i < _queue.length; i++) {
-		if(_queue[i] === id) {
+		if(_queue[i] === name) {
 			var first = _queue.slice(0,i),
 				second = _queue.slice(i+1, _queue.length);
 			_queue = first.concat(second);
@@ -193,7 +194,7 @@ function unresponsive() {
 	popUser();
 }
 
-function deleteUser(id) {
-	delete _users[id];
-	spliceQueue(id);
+function deleteUser(name) {
+	delete _users[name];
+	spliceQueue(name);
 }

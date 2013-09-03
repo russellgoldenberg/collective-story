@@ -31,16 +31,25 @@ body {
 			}
 		}
 		.inQueue {
+			display: none;
 			.countAhead {
 				font-size: 1.8em;
 				color: @red;
 			}	
 		}
 		.onDeck {
+			color: @blue;
 			display: none;
 		}
 		.booted {
 			display: none;
+		}
+		.liveAuthors {
+			color: @gray;
+			.countTotal {
+				font-size: 1.8em;
+				color: @blue;
+			}
 		}
 	}
 }
@@ -81,4 +90,13 @@ body {
 .contribution {
 	display: none;
 	text-align: center;
+}
+
+// ABOUT PAGE
+.description {
+	font-family: @font-family-serif;
+}
+.smokey {
+	font-size: .9em;
+	color: @red;
 }

@@ -1,5 +1,5 @@
 var socket,
-	id,
+	name,
 	story,
 	turnTimeout,
 	time,
@@ -15,25 +15,24 @@ var socket,
 		init: function() {
 			socket = io.connect();
 			socket.on('welcome', function (data) {
-				id = data.id;
 				story = data.story;
 				turnTime = Math.floor(data.timer / 1000);
 				$('.storyText').text(story);
-				findId(data.queue);
-				console.log('welcome: ', id);
+				$('.countTotal').text(data.count);
+				console.log('welcome');
+				joinPrompt('Choose a pen name.');				
 			});
 			socket.on('sendQueue', function (data) {
 				console.log('send', data);
-				if(data.turn === id) {
+				$('.countTotal').text(data.count);
+				if(data.turn === name) {
 					startTurn();
 				} else {
-					findId(data.queue);
+					findName(data.queue);
 				}
 			});
 			socket.on('addWord', function (data) {
-				// console.log('add word:', data);
-				// console.log(data.id, id);
-				if(data.id === id) {
+				if(data.name === name) {
 					$('#word').val('');
 					$('.message').hide();
 					$('.newText').hide();
@@ -52,6 +51,15 @@ var socket,
 			socket.on('warning', function () {
 				displayMessage('You took too long to contribute during your turn, back of the line!');
 			});
+			socket.on('joinResponse', function(data) {
+				//if true then accepted
+				if(data.join) {
+					name = data.name;
+					$('.join').hide();
+				} else {
+					joinPrompt(data.name + ' is taken. Try another.');
+				}
+			});
 
 			setupEvents();
 		}
@@ -63,9 +71,9 @@ var socket,
 
 })();
 
-function findId(queue) {
+function findName(queue) {
 	for(var i = 0; i < queue.length; i++) {
-		if(queue[i] === id) {
+		if(queue[i] === name) {
 			if(i===0) {
 				$('.message').hide();
 				$('.onDeck').show();
@@ -108,6 +116,11 @@ function updateTime() {
 }
 
 function setupEvents() {
+	$('.joinButton').on('click', function (e) {
+		e.preventDefault();
+		joinPrompt('Choose a pen name.');
+		return false;
+	});
 	$('.contribute').on('click', function (e) {
 		e.preventDefault();
 
@@ -178,9 +191,28 @@ function verifyAndSend(val, para) {
 
 	var	data = {
 		word: split[0],
-		id: id,
+		name: name,
 		paragraph: para
 	};
 
 	socket.emit('contribute', data);
+}
+
+function joinPrompt(p) {
+	apprise(p + ' (3-15 characters)', {'input':'nomdeplume', 'textOk':'Join'}, function(r) {
+
+		if(r.length > 0) {
+			var name = r.trim();
+			var check = /^[a-zA-Z]*$/.test(r);
+			if(check) {
+				if(name.length > 15 || name.length < 3) {
+					joinPrompt('Stay within the lines! Try again.');
+				} else {
+					socket.emit('join', name);
+				}
+			} else {
+				joinPrompt('Only letters please. Try again.');
+			}		
+		}
+	});
 }

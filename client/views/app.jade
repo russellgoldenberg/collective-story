@@ -15,31 +15,45 @@ block content
         //-                     a(href="/") About
         //-                 li
         //-                     a(href="/") Archives
-
         .container
+            .row
+                .col-md-12
+                    p(style='text-align:center;')
+                        a(href='/about') About
+                        |   | 
+                        a(href='/archives') Archives
             .row.topBar
                 .col-md-12.info
+                    p.liveAuthors
+                        span.countTotal
+                        |  live authors
+                    p.message.join
+                        button.btn.btn-primary.joinButton Begin
                     p.message.inQueue There are 
                         span.countAhead
                         |  people ahead of you
                     p.message.yourTurn You have 
                         span.countdown 
                         |  seconds remaining
-                    p.message.onDeck You are up next!
-                    p.message.booted You are a fly on the way
-
+                    p.message.onDeck You are up next, get ready!
+                    p.message.booted You have been booted
+                    
             .row
                 .col-md-12.header
                     h1 Ramblings
                     p An experiment in massively multiplayer online literature generation
             .row
-                .col-md-12
+                .col-md-8.col-md-offset-2
                     p.story
                         span.storyText
                         span.newText
                             input#word(placeholder='enter word here...', maxlength='23')
                     p.newParagraph
                         button.newParaButton.btn.btn-primary &para;
+            .row                        
                 .col-md-12
                     p.contribution
                         button.contribute.btn Contribute
+
+    script(src='#{cloudPath}libs/socket.js')
+    script(src='#{cloudPath}libs/ramblings.js')

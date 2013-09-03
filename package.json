@@ -28,5 +28,6 @@
   "scripts": {
     "start": "node ./bin/server"
   },
-  "subdomain": "ramblings"
+  "subdomain": "ramblings",
+  "version": "0.0.0"
 }
