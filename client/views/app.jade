@@ -15,17 +15,22 @@ block content
         //-                     a(href="/") About
         //-                 li
         //-                     a(href="/") Archives
-        .container
-            .row
-                .col-md-12
-                    p(style='text-align:center;')
-                        a(href='/about') About
-                        |   | 
-                        a(href='/archives') Archives
-            .row.topBar
-                .col-md-12.info
+        .navbar.navbar-default.navbar-fixed-top
+            .container
+                .navbar-header
+                    button.navbar-toggle(type='button', data-toggle='collapse', data-target='.navbar-collapse')
+                        span.icon-bar
+                        span.icon-bar
+                        span.icon-bar
+                .navbar-collapse.collapse
+                    ul.nav.navbar-nav.navbar-right
+                        li
+                            a(href='/about') About
+                        li
+                            a(href='/archives') Archives
+                .info
                     p.liveAuthors
-                        span.countTotal
+                        span.countAuthors
                         |  live authors
                     p.message.join
                         button.btn.btn-primary.joinButton Begin
@@ -37,17 +42,12 @@ block content
                         |  seconds remaining
                     p.message.onDeck You are up next, get ready!
                     p.message.booted You have been booted
-                    
-            .row
-                .col-md-12.header
+                .header
                     h1 Ramblings
-                    p An experiment in massively multiplayer online literature generation
+                    p An experiment in massively multiplayer online literature generation   
+        .container
             .row
-                .col-md-8.col-md-offset-2
-                    p.story
-                        span.storyText
-                        span.newText
-                            input#word(placeholder='enter word here...', maxlength='23')
+                .col-md-8.col-md-offset-2.storyContainer
                     p.newParagraph
                         button.newParaButton.btn.btn-primary &para;
             .row                        

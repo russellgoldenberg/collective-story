@@ -85,32 +85,45 @@ helpers.connectMongoose(app, useMongo, function(databases) {
 
 	//add base story into DB
 	var storyModel = helpers.useModel('story');
-	storyModel.findOne(function(err,result) {
-		if(err) {
-			console.log(err);
-		} else if(result) {
-			result.paragraph = 'Once upon a time ';
-			result.index = 0;
-			result.save(function(err, suc) {
-				if(err) {
-					console.log(err);
-				} else {
-					console.log('story ready update');
-					ramblings.init(io, helpers);
-				}
-			});
-		} else {
-			var story = new storyModel({paragraph: 'Once upon a time ', index: 0});
-			story.save(function(err, suc) {
-				if(err) {
-					console.log(err);
-				} else {
-					console.log('story ready new');
-					ramblings.init(io, helpers);
-				}
-			});
-		}
-	});
+	//there is a result, see if we did HARD reset in terminal
+	var reset = config.get('RESET');
+	
+	if(reset) {
+		storyModel.remove({}, function(err) {
+			if(err) { console.log(err); }
+			else {
+				var story = new storyModel({paragraphs: ['Once '], index: 0, authors: {'codenberg': 1}});
+				story.save(function(err, suc) {
+					if(err) {
+						console.log(err);
+					} else {
+						console.log('story reset');
+						ramblings.init(io, helpers);
+					}
+				});
+			}
+		})
+	} else {
+		//check if one exists else insert new
+		storyModel.findOne(function(err,result) {
+			if(err) {
+				console.log(err);
+			} else if(!result) {
+				var story = new storyModel({paragraphs: ['Once '], index: 0, authors: {'codenberg': 1}});
+				story.save(function(err, suc) {
+					if(err) {
+						console.log(err);
+					} else {
+						console.log('first story inserted');
+						ramblings.init(io, helpers);
+					}
+				});
+			} else {
+				console.log('story exists');
+				ramblings.init(io, helpers);
+			}
+		});
+	}
 
 	// server = app.listen(port, function() {
 	// 	var local = server.address();

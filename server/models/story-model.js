@@ -1,8 +1,9 @@
 module.exports = function(mongoose, db, Schema, ObjectId) {
 
 	var StorySchema = new Schema({
-		paragraph: String,
-		index: Number
+		paragraphs: [String],
+		index: Number,
+		authors: {}
 	});
 
 	var StoryModel = db.model('Story', StorySchema, 'storys');

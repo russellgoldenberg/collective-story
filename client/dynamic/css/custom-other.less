@@ -1,58 +1,47 @@
 body {
-	// padding-top: 70px;
-	padding-top: 30px;
+	padding-top: 300px;
 }
 .header {
 	text-align: center;
 	p {
-		color: @gray-light;
-		padding-bottom: 30px;
-		border-bottom: 1px dashed @gray-light;	
+		color: @gray-light;	
 	}
 }
-.topBar {
-	p {
-		margin: 0;
+
+.info {
+	.message {
+		color: @gray;
 	}
-	.nav {
-		p {
-			text-align: right;	
-		}
-	}
-	.info {
-		.message {
-			color: @gray;
-		}
-		.yourTurn {
-			display: none;
-			.countdown {
-				font-size: 1.8em;
-				color: @blue;
-			}
-		}
-		.inQueue {
-			display: none;
-			.countAhead {
-				font-size: 1.8em;
-				color: @red;
-			}	
-		}
-		.onDeck {
+	.yourTurn {
+		display: none;
+		.countdown {
+			font-size: 1.8em;
 			color: @blue;
-			display: none;
 		}
-		.booted {
-			display: none;
-		}
-		.liveAuthors {
-			color: @gray;
-			.countTotal {
-				font-size: 1.8em;
-				color: @blue;
-			}
+	}
+	.inQueue {
+		display: none;
+		.countAhead {
+			font-size: 1.8em;
+			color: @red;
+		}	
+	}
+	.onDeck {
+		color: @blue;
+		display: none;
+	}
+	.booted {
+		display: none;
+	}
+	.liveAuthors {
+		color: @gray;
+		.countAuthors {
+			font-size: 1.8em;
+			color: @blue;
 		}
 	}
 }
+
 .story {
 	color: @gray;
 	font-family: @font-family-serif;
@@ -99,4 +88,17 @@ body {
 .smokey {
 	font-size: .9em;
 	color: @red;
+}
+
+.navbar-fixed-top {
+	border-bottom: 1px dashed @gray-light;
+	padding-bottom: 15px;
+}
+.navbar-collapse {
+	border-bottom: 1px solid @gray-light;
+}
+@media (min-width: 768px) {
+	.navbar-collapse {
+		border-bottom: none;
+	}
 }

@@ -2,14 +2,19 @@
 An experiment in massively multiplayer online literature generation
 
 ##TODO
-routes?
+document
+current story
+change db sturcture for stories with paragraphs
 add paragraph feature (also saves new array chunk)
-add new template for multi paragraphs
-choose most recent paragraphs to show
 meta data on each word submitted
-how to deal with long text (chapters?)
 start with ...see archives at beginning
 
+##VERSION 1
+Predefined short story word length
+
 ##VERSION 2
+Infinite story
+
+##VERSION 3
 full sentences
 email turn

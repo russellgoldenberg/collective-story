@@ -15,12 +15,23 @@ block content
         //-                     a(href="/") About
         //-                 li
         //-                     a(href="/") Archives
-
-        .container
-            .row
-                .col-md-12.header
+        .navbar.navbar-default.navbar-fixed-top
+            .container
+                .navbar-header
+                    button.navbar-toggle(type='button', data-toggle='collapse', data-target='.navbar-collapse')
+                        span.icon-bar
+                        span.icon-bar
+                        span.icon-bar
+                .navbar-collapse.collapse
+                    ul.nav.navbar-nav.navbar-right
+                        li
+                            a(href='/about') About
+                        li
+                            a(href='/archives') Archives
+                .header
                     h1 Ramblings
-                    p An experiment in massively multiplayer online literature generation
+                    p An experiment in massively multiplayer online literature generation  
+        .container
             .row
                 .col-md-6.col-md-offset-3.description
                     p Hi Internet traveler. Ramblings is a real-time literary game that enables users to collaboratively assemble a story, one word at a time.<br><br>This experiment was built with Node, a handful of sockets, some sake, and an attention-seeking cat*.

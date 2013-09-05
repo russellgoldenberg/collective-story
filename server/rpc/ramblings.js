@@ -3,12 +3,14 @@ var _users = {},
 	_io,
 	_queue = [],
 	_queueTimeout,
-	_timeoutLength = 25000,
-	_story = null,
+	_story,
 	_currentTurn,
-	_userModel = null,
-	_storyModel = null,
-	_helpers = null;
+	_currentParagraph,
+	_currentIndex,
+	_userModel,
+	_storyModel,
+	_helpers,
+	_timeoutLength = 25000;
 
 
 var self = module.exports = {
@@ -18,13 +20,19 @@ var self = module.exports = {
 		console.log('init io');
 		// _userModel = _helpers.useModel('user');
 		_storyModel = _helpers.useModel('story');
-		_storyModel.findOne(function(err, result) {
-			if(err) {
-				console.log(err);
-			} else {
-				_story = result;
-			}
-		});
+		_storyModel
+			.where('index').gte(0)
+			.sort('index -1')
+			.findOne(function(err, result) {
+				if(err) {
+					console.log(err);
+				} else {
+					_story = result;
+					console.log(_story);
+					_currentIndex = _story.index;
+					_currentParagraph = _story.paragraphs.length - 1;
+				}
+			});
 		_io = io;
 		_io.set('log level', 2);
 
@@ -35,7 +43,7 @@ var self = module.exports = {
 			console.log(newUser);
 
 			var data = {
-				story: _story.paragraph,
+				paragraphs: _story.paragraphs,
 				timer: _timeoutLength,
 				count: _queue.length
 			};
@@ -81,8 +89,8 @@ function debug() {
 
 function setupJoin(socket) {
 	socket.on('join', function(name) {
-		//TODO check db for names
-		if(name) {
+		//TODO check for names
+		if(!_users[name]) {
 			//setup other socket events
 			setupEvents(socket, name);
 			//add to list of users
@@ -97,6 +105,8 @@ function setupJoin(socket) {
 			if(!_currentTurn) {
 				popUser();
 			}	
+		} else {
+			socket.emit('joinResponse', {name: name, join:false});
 		}
 	});
 }
@@ -119,21 +129,36 @@ function setupEvents(socket, name) {
 		//verify they are current ones
 		var spacedWord = data.word + ' ';
 		if(data.name === _currentTurn) {
-			_story.paragraph += spacedWord;
+			_story.paragraphs[_currentParagraph] += spacedWord;
+			if(_story.authors[data.name]) {
+				_story.authors[data.name] +=1;
+			} else {
+				_story.authors[data.name] = 1;
+			}
 
 			clearTimeout(_queueTimeout);
 
-			_story.save(function(err,result) {
-				if(err) { console.log('story error:', err); }
+			_storyModel.update({index: _currentIndex}, {paragraphs: _story.paragraphs, authors: _story.authors}, function(err,suc) {
+				if(err) { console.log(err); }
 				else {
 					var sendData = {
 						word: spacedWord,
+						currentParagraph: _currentParagraph,
 						name: data.name
 					};
 					_io.sockets.emit('addWord', sendData);
+					//check for new paragraph 
+					if(data.newParagraph) {
+						_currentParagraph += 1;
+						_story.paragraphs.push('');
+						_storyModel.update({index: _currentIndex}, {paragraphs: _story.paragraphs});
+					}
+
 					popUser();
 				}
 			});
+		} else {
+			//TODO
 		}
 	});
 
@@ -168,8 +193,8 @@ function popUser() {
 
 	if(_users[name]) {
 		_queueTimeout = setTimeout(unresponsive, _timeoutLength);
-		sendQueue();
 	}
+	sendQueue();
 
 	//start backup timeout clock
 }
