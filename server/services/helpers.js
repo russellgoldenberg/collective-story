@@ -29,18 +29,18 @@ var self = module.exports = {
 	connectMongoose: function(app, useMongo, callback) {
 		// connect to database
 		if(!self.mongooseConnected && useMongo) {
-			console.log('\n   * * * * * * * * * * * *   Starting Mongo DB Service   * * * * * * * * * * * *   '.yellow);
+			console.log('* * * Starting MongoDB * * *'.yellow);
 			self.db = mongoose.createConnection(config.get('MONGO_URL'));
 			// self.db = mongoose.createConnection(config.get('MONGO_URL_JITSU'));
 			self.db.on('error', console.error.bind(console, ' CONNECTION ERROR: '.red.inverse));
 			self.db.once('open', function () {
-				console.log('   * * * * * * * * * * * *   Ramblings:'.yellow + ' database connection opened.');
+				console.log('* * * connection succesful * * *'.yellow);
 				if(typeof callback === 'function') {
 					callback({ mongooseDb: self.db });
 				}
 			});
 		} else {
-			console.log('\n   * * * * * * * * * * * *   Mongo Service Not Connected   * * * * * * * * * * * *   '.red);
+			console.log('\n   * * * Mongo Service Not Connected  * * *   '.red);
 			if(typeof callback === 'function') {
 				callback();
 			}

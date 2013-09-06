@@ -24,10 +24,9 @@ var rootDir = process.cwd(),
 	socketio = require('socket.io'),
 	ramblings = require(rootDir + '/server/rpc/ramblings');
 
-console.log('RAMBLINGS');
-// ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ --- >>>
-// ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ --- >>> EXRESS
-// ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ --- >>>
+console.log('~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~'.red);
+console.log('~ - ~ - ~ - ~ - ~ RAMBLINGS ~ - ~ - ~ - ~ - ~'.red);
+console.log('~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~'.red); 
 helpers.connectMongoose(app, useMongo, function(databases) {
 
 	app.configure(function() {
@@ -69,7 +68,7 @@ helpers.connectMongoose(app, useMongo, function(databases) {
 
 	routes.setExpressRoutes(app);
 
-	console.log('Express configured.'.green);
+	console.log('* * * Express configured * * *'.yellow);
 
 	// ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ --- >>>
 	// ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ --- >>> START THE SERVER

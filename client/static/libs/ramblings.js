@@ -8,7 +8,15 @@ var _socket,
 	_inputHTML;
 
 var $storyContainer,
-	$countAuthors;
+	$countAuthors,
+	$message,
+	$contribution,
+	$newParagraph,
+	$inQueue,
+	$onDeck,
+	$countAhead,
+	$countdown,
+	$yourTurn;
 
 (function() {
 
@@ -16,45 +24,62 @@ var $storyContainer,
 
 		init: function() {
 			setupSelectors();
+			//connect socket
 			_socket = io.connect();
+			
+			//welcome from server
 			_socket.on('welcome', function (data) {
 				_paragraphs = data.paragraphs;
 				_turnTime = Math.floor(data.timer / 1000);
-				fillStory();
-				$countAuthors.text(data.count);
-				console.log('welcome', data);
 				joinPrompt('Choose a pen name.');
+				updateAuthorCount(data.count);
+				fillStory();
 			});
+
+			//turn queue from server
 			_socket.on('sendQueue', function (data) {
-				console.log('send', data);
-				$countAuthors.text(data.count);
+				updateAuthorCount(data.count);
 				if(data.turn === _name) {
 					startTurn();
 				} else {
 					findName(data.queue);
 				}
 			});
+
+			//new word to story from server
 			_socket.on('addWord', function (data) {
+				//if self added it, get rid of turn UI stuff
 				if(data.name === _name) {
 					$('#word').val('');
-					$('.message').hide();
 					$('.newText').hide();
-					$('.contribution').hide();
-					$('.newParagraph').hide();
-					$('.inQueue').show();
+					$message.hide();
+					$contribution.hide();
+					$newParagraph.hide();
+					$inQueue.show();
 				}
 				addWord(data);
+
+				if(data.newParagraph) {
+					console.log('add para');
+					addParagraph(data.currentParagraph);
+				}
 			});
+
+
+			//if the user needs to be booted for no responses
 			_socket.on('boot', function () {
 				displayMessage('You have timed out twice, you are now a mere spectator.');
-				$('.message').hide();
+				$message.hide();
 				$('.booted').show();
 			});
+
+			//warn user if they missed a turn
 			_socket.on('warning', function () {
 				displayMessage('You took too long to contribute during your turn, back of the line!');
 			});
+
+			//feedback if they can join or not
 			_socket.on('joinResponse', function(data) {
-				//if true then accepted
 				if(data.join) {
 					_name = data.name;
 					$('.join').hide();
@@ -63,6 +88,7 @@ var $storyContainer,
 				}
 			});
 
+			//setup input events
 			setupEvents();
 		}
 	};
@@ -77,10 +103,10 @@ function findName(queue) {
 	for(var i = 0; i < queue.length; i++) {
 		if(queue[i] === _name) {
 			if(i===0) {
-				$('.message').hide();
-				$('.onDeck').show();
+				$message.hide();
+				$onDeck.show();
 			} else {
-				$('.countAhead').text(i);	
+				$countAhead.text(i);	
 			}
 			break;
 		}
@@ -88,11 +114,11 @@ function findName(queue) {
 }
 
 function startTurn() {
-	$('.message').hide();
-	$('.countdown').text(_turnTime);
-	$('.yourTurn').show();
+	$message.hide();
+	$countdown.text(_turnTime);
+	$yourTurn.show();
 	$('.newText').show();
-	$('.contribution').show();
+	$contribution.show();
 	_time = 0;
 	_startTime = new Date().getTime();
 	setTimeout(updateTime, 100);
@@ -107,7 +133,7 @@ function updateTime() {
     //to keep it true to time
     var diff = (new Date().getTime() - _startTime) - _time;
 
-    $('.countdown').text(elapsed);
+    $countdown.text(elapsed);
 
     if(elapsed <= 0) {
 		_socket.emit('timeLimit');
@@ -166,6 +192,7 @@ function verifyAndSend(val, para) {
 		newParagraph: para
 	};
 
+	$('.contribute, .newParaButton').removeClass('btn-primary');
 	_socket.emit('contribute', data);
 }
 
@@ -183,34 +210,51 @@ function joinPrompt(p) {
 				}
 			} else {
 				joinPrompt('Only letters please. Try again.');
-			}		
+			}	
 		}
 	});
 }
 
 function fillStory() {
 	$('.story').remove();
-	for(var p = 0; p < _paragraphs.length; p++) {
+	for(var p = _paragraphs.length - 1; p > -1; p--) {
 		
 		var newPara = '<p class="story index' + p + '"><span class="text">';
 		newPara += _paragraphs[p] + '</span></p>';
 		$('.storyContainer').prepend(newPara);
 	}
-	$('p.story').last().append(_inputHTML);
-	bindWordCheck();
+	addInputBox();
 }
 
 function setupSelectors() {
 	$storyContainer = $('.storyContainer');
 	$countAuthors = $('.countAuthors');
+	$message = $('.message');
+	$contribution = $('.contribution');
+	$newParagraph = $('.newParagraph');
+	$inQueue = $('.inQueue');
+	$onDeck = $('.onDeck');
+	$countAhead = $('.countAhead');
+	$countdown = $('.countdown');
+	$yourTurn = $('.yourTurn');
 
 	_inputHTML = '<span class="newText"><input id="word" placeholder="enter word here..." maxlength="23"></input></span>';
 }
 
 function addWord(data) {
+	console.log(data);
 	var selector = $('.index' + data.currentParagraph + ' .text');
 	var text = $(selector).text() + data.word;
 	$(selector).text(text);
+}
+
+function addParagraph(index) {
+	var afterSelector = $('.index' + index),
+		newIndex = index + 1;
+	var newPara = '<p class="story index' + newIndex + '"><span class="text"></span></p>';
+
+	afterSelector.after(newPara);
+	addInputBox();
 }
 
 function bindWordCheck() {
@@ -232,9 +276,9 @@ function bindWordCheck() {
 				
 				//TODO use regex!
 				if(lastChar === '.' || lastChar === '!' || lastChar === '?') {
-					$('.newParagraph').show();
+					$newParagraph.show();
 				} else {
-					$('.newParagraph').hide();
+					$newParagraph.hide();
 				}
 				return;
 			}
@@ -245,11 +289,21 @@ function bindWordCheck() {
 	});
 
     $('#word').on('keypress', function (e) {
-		if(e.which === 13) {
+		if(e.keyCode === 13) {
 			e.preventDefault();
 			var val = $('#word').val().trim();
 			verifyAndSend(val);
 			return false;
 		}
 	});
+}
+
+function updateAuthorCount(count) {
+	$countAuthors.text(count);
+}
+
+function addInputBox() {
+	$('.newText').remove();
+	$('p.story').last().append(_inputHTML);
+	bindWordCheck();
 }
