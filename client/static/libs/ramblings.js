@@ -36,10 +36,14 @@ var $storyContainer,
 				_paragraphs = data.paragraphs;
 				_turnTime = Math.floor(data.timer / 1000);
 				_wordLimit = data.wordLimit;
-				joinPrompt('Choose a pen name.');
+				// joinPrompt('Choose a pen name.');
 				updateAuthorCount(data.count);
 				updateWordCount(data.wordCount);
 				fillStory();
+			});
+
+			_socket.on('sock', function(soc) {
+				console.log(soc);
 			});
 
 			//turn queue from server

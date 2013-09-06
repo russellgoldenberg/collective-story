@@ -20,6 +20,13 @@ var self = module.exports = {
 			});
 		});
 
+		app.get('/archives', function(req, res) {
+			res.render('archives', {
+				title: 'Ramblings',
+				globals: globals
+			});
+		});
+
 		// 404'd
 		app.use(function(req, res, next) {
 			// res.send(404, 'Sorry cant find that!');

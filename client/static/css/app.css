@@ -851,7 +851,7 @@ th.visible-print,td.visible-print{display:none !important}
 ::-moz-placeholder{color:#7cccc9}
 :-ms-input-placeholder{color:#7cccc9}
 .contribution{display:none;text-align:center}
-.description{font-family:"Lora",Georgia,"Times New Roman",Times,serif}
+.description{margin-top:-50px;font-family:"Lora",Georgia,"Times New Roman",Times,serif;font-size:1.2em}.description span{font-size:0.8em;background:#7cccc9;color:white;padding:2px}
 .smokey{font-size:.9em;color:#f52e47}
 .navbar-fixed-top{border-bottom:1px dashed #999;padding-bottom:15px;-moz-box-shadow:0 0 25px 25px #fff;-webkit-box-shadow:0 0 25px 25px #fff;box-shadow:0 0 25px 25px #fff}
 .navbar-collapse{border-bottom:1px solid #999}
@@ -859,3 +859,4 @@ th.visible-print,td.visible-print{display:none !important}
 @media (min-width:768px){.navbar-collapse{border-bottom:none}}@media screen and (max-width:768px){.header p.full{display:none} .header p.half{display:block}}.jump{position:fixed;width:180px;top:305px;right:-140px;background:#555;color:white;opacity:0.3;cursor:pointer;z-index:1050;-moz-transition:all .5s;-webkit-transition:all .5s;transition:all .5s}.jump p{padding:10px;margin:0}.jump p span{margin-left:2px;margin-right:20px}
 .jump .start{display:none}
 .jump:hover{opacity:1;right:0}
+a{font-weight:700}

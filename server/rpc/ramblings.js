@@ -38,7 +38,6 @@ var self = module.exports = {
 
 		//new connection from client
 		self.io.sockets.on('connection', function (socket) {
-
 			var newUser = 'user #' + self.id + ' joined';
 			console.log(newUser.yellow);
 
@@ -83,6 +82,15 @@ var self = module.exports = {
 			} else {
 				socket.emit('joinResponse', {name: name, join: false});
 			}
+		});
+
+		socket.on('listStories', function() {
+			self.storyModel
+				.where('index').gte(0)
+				.select('index wordCount')
+				.find(function(err, result) {
+					socket.emit('stories', result);
+				});
 		});
 	},
 
