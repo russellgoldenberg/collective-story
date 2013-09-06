@@ -29,19 +29,28 @@ block content
                         li
                             a(href='/archives') Archives
                 .info
-                    p.liveAuthors
-                        span.countAuthors
-                        |  live authors
-                    p.message.join
-                        button.btn.btn-primary.joinButton Begin
-                    p.message.inQueue There are 
-                        span.countAhead
-                        |  people ahead of you
-                    p.message.yourTurn You have 
-                        span.countdown 
-                        |  seconds remaining
-                    p.message.onDeck You are up next, get ready!
-                    p.message.booted You have been booted
+                    .row
+                        .col-xs-6
+                            p.liveAuthors
+                                span.countAuthors
+                                |  live authors
+                        .col-xs-6
+                            p.wordsLeft words left: 
+                                span.wordsLeftCount
+                    .row
+                        .col-md-12
+                            p.message.join
+                                button.btn.btn-primary.joinButton Begin
+                            p.message.inQueue There are 
+                                span.countAhead
+                                |  people ahead of you
+                            p.message.yourTurn You have 
+                                span.countdown 
+                                |  seconds remaining
+                            p.message.onDeck You are up next, get ready!
+                            p.message.booted You have been booted
+                            p.message.endOfStory End of story. Starting fresh...  
+                        
                 .header
                     h1 Ramblings
                     p An experiment in massively multiplayer online literature generation   

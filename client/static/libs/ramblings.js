@@ -5,6 +5,7 @@ var _socket,
 	_time,
 	_startTime,
 	_turnTime,
+	_wordLimit,
 	_inputHTML;
 
 var $storyContainer,
@@ -16,7 +17,8 @@ var $storyContainer,
 	$onDeck,
 	$countAhead,
 	$countdown,
-	$yourTurn;
+	$yourTurn,
+	$wordsLeftCount;
 
 (function() {
 
@@ -31,8 +33,10 @@ var $storyContainer,
 			_socket.on('welcome', function (data) {
 				_paragraphs = data.paragraphs;
 				_turnTime = Math.floor(data.timer / 1000);
+				_wordLimit = data.wordLimit;
 				joinPrompt('Choose a pen name.');
 				updateAuthorCount(data.count);
+				updateWordCount(data.wordCount);
 				fillStory();
 			});
 
@@ -58,11 +62,24 @@ var $storyContainer,
 					$inQueue.show();
 				}
 				addWord(data);
+				updateWordCount(data.wordCount);
 
 				if(data.newParagraph) {
 					console.log('add para');
 					addParagraph(data.currentParagraph);
 				}
+			});
+
+			_socket.on('endOfStory', function () {
+				$message.hide();
+				$('.endOfStory').show();
+			});
+
+			_socket.on('newStory', function () {
+				updateAuthorCount(0);
+				updateWordCount(0);
+				_paragraphs = [''];
+				fillStory();
 			});
 
 
@@ -121,7 +138,7 @@ function startTurn() {
 	$contribution.show();
 	_time = 0;
 	_startTime = new Date().getTime();
-	setTimeout(updateTime, 100);
+	_turnTimeout = setTimeout(updateTime, 100);
 	$('html, body').animate({ scrollTop: $(document).height()}, 'slow' );
 	$('#word').focus();
 }
@@ -138,7 +155,7 @@ function updateTime() {
     if(elapsed <= 0) {
 		_socket.emit('timeLimit');
     } else {
-        setTimeout(updateTime, (100 - diff));
+        _turnTimeout = setTimeout(updateTime, (100 - diff));
     }
 }
 
@@ -192,6 +209,7 @@ function verifyAndSend(val, para) {
 		newParagraph: para
 	};
 
+	clearTimeout(_turnTimeout);
 	$('.contribute, .newParaButton').removeClass('btn-primary');
 	_socket.emit('contribute', data);
 }
@@ -210,12 +228,13 @@ function joinPrompt(p) {
 				}
 			} else {
 				joinPrompt('Only letters please. Try again.');
-			}	
+			}
 		}
 	});
 }
 
 function fillStory() {
+	$('.endOfStory').hide();
 	$('.story').remove();
 	for(var p = _paragraphs.length - 1; p > -1; p--) {
 		
@@ -237,12 +256,12 @@ function setupSelectors() {
 	$countAhead = $('.countAhead');
 	$countdown = $('.countdown');
 	$yourTurn = $('.yourTurn');
+	$wordsLeftCount = $('.wordsLeftCount');
 
-	_inputHTML = '<span class="newText"><input id="word" placeholder="enter word here..." maxlength="23"></input></span>';
+	_inputHTML = '<span class="newText"><input id="word" placeholder="enter..." maxlength="23"></input></span>';
 }
 
 function addWord(data) {
-	console.log(data);
 	var selector = $('.index' + data.currentParagraph + ' .text');
 	var text = $(selector).text() + data.word;
 	$(selector).text(text);
@@ -302,8 +321,14 @@ function updateAuthorCount(count) {
 	$countAuthors.text(count);
 }
 
+function updateWordCount(count) {
+	var left = _wordLimit - count;
+	$wordsLeftCount.text(left);
+}
+
 function addInputBox() {
 	$('.newText').remove();
 	$('p.story').last().append(_inputHTML);
 	bindWordCheck();
 }
+

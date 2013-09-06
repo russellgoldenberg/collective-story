@@ -40,6 +40,18 @@ body {
 			color: @blue;
 		}
 	}
+	.wordsLeft {
+		color: @gray;
+		text-align: right;
+		.wordsLeftCount {
+			font-size: 1.8em;
+			color: @red;
+		}
+	}
+	.endOfStory {
+		display: none;
+		color: @red;
+	}
 }
 
 .story {
@@ -96,6 +108,9 @@ body {
 }
 .navbar-collapse {
 	border-bottom: 1px solid @gray-light;
+}
+.navbar-nav > li > a {
+	padding-right: 0;
 }
 @media (min-width: 768px) {
 	.navbar-collapse {

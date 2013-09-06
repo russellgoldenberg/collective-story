@@ -1,3 +1,4 @@
+var _wordLimit = 10;
 var self = module.exports = {
 	
 	users: {},
@@ -45,7 +46,9 @@ var self = module.exports = {
 			var data = {
 				paragraphs: self.story.paragraphs,
 				timer: self.timeoutLength,
-				count: self.queue.length
+				count: self.queue.length,
+				wordCount: self.story.wordCount,
+				wordLimit: _wordLimit
 			};
 
 			//welcome the noob
@@ -120,6 +123,7 @@ var self = module.exports = {
 			var spacedWord = data.word + ' ';
 			if(data.name === self.currentTurn) {
 				self.story.paragraphs[self.currentParagraph] += spacedWord;
+				self.story.wordCount += 1;
 				if(self.story.authors[data.name]) {
 					self.story.authors[data.name] +=1;
 				} else {
@@ -128,25 +132,37 @@ var self = module.exports = {
 
 				clearTimeout(self.queueTimeout);
 
-				self.storyModel.update({index: self.currentIndex}, {paragraphs: self.story.paragraphs, authors: self.story.authors}, function(err,suc) {
+				self.storyModel.update({index: self.currentIndex}, {paragraphs: self.story.paragraphs, authors: self.story.authors, wordCount: self.story.wordCount}, function(err,suc) {
 					if(err) { console.log(err); }
 					else {
+						//start new story
+						var newStory = false;
+						if(self.story.wordCount >= _wordLimit) {
+							newStory = true;
+						}
 						var sendData = {
 							word: spacedWord,
 							currentParagraph: self.currentParagraph,
 							name: data.name,
-							newParagraph: data.newParagraph
+							newParagraph: data.newParagraph,
+							wordCount: self.story.wordCount
 						};
 						self.io.sockets.emit('addWord', sendData);
 						
 						//update new paragraph info on server side if need be
-						if(data.newParagraph) {
+						if(data.newParagraph && !newStory) {
 							self.currentParagraph += 1;
 							self.story.paragraphs.push('');
 							self.storyModel.update({index: self.currentIndex}, {paragraphs: self.story.paragraphs});
 						}
 						
-						self.popUser();
+						if(newStory) {
+							self.io.sockets.emit('endOfStory');
+							self.currentTurn = null;
+							setTimeout(self.newStory, 5000);
+						} else {
+							self.popUser();
+						}
 					}
 				});
 			} else {
@@ -211,5 +227,20 @@ var self = module.exports = {
 	deleteUser: function(name) {
 		delete self.users[name];
 		self.spliceQueue(name);
+	},
+
+	newStory: function() {
+		self.currentIndex += 1;
+		var story = new self.storyModel({paragraphs: [''], index: self.currentIndex, authors: {}, wordCount: 0});
+		story.save(function(err,result) {
+			if(err) { console.log(err); }
+			else {
+				self.story = result;
+				self.currentIndex = self.story.index;
+				self.currentParagraph = self.story.paragraphs.length - 1;
+				self.io.sockets.emit('newStory');
+				self.popUser();
+			}
+		});
 	}
 };
