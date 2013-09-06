@@ -6,7 +6,9 @@ var _socket,
 	_startTime,
 	_turnTime,
 	_wordLimit,
-	_inputHTML;
+	_inputHTML,
+	_live,
+	_blur;
 
 var $storyContainer,
 	$countAuthors,
@@ -42,6 +44,7 @@ var $storyContainer,
 
 			//turn queue from server
 			_socket.on('sendQueue', function (data) {
+				console.log('send', data);
 				updateAuthorCount(data.count);
 				if(data.turn === _name) {
 					startTurn();
@@ -75,7 +78,8 @@ var $storyContainer,
 				$('.endOfStory').show();
 			});
 
-			_socket.on('newStory', function () {
+			_socket.on('newStory', function (wordLimit) {
+				_wordLimit = wordLimit;
 				updateAuthorCount(0);
 				updateWordCount(0);
 				_paragraphs = [''];
@@ -85,8 +89,13 @@ var $storyContainer,
 
 			//if the user needs to be booted for no responses
 			_socket.on('boot', function () {
+				console.log('booted');
+				_name = null;
 				displayMessage('You have timed out twice, you are now a mere spectator.');
 				$message.hide();
+				$contribution.hide();
+				$newParagraph.hide();
+				$('.newText').hide();
 				$('.booted').show();
 			});
 
@@ -123,7 +132,8 @@ function findName(queue) {
 				$message.hide();
 				$onDeck.show();
 			} else {
-				$countAhead.text(i);	
+				$countAhead.text(i);
+				$inQueue.show();	
 			}
 			break;
 		}
@@ -138,13 +148,13 @@ function startTurn() {
 	$contribution.show();
 	_time = 0;
 	_startTime = new Date().getTime();
-	_turnTimeout = setTimeout(updateTime, 100);
-	$('html, body').animate({ scrollTop: $(document).height()}, 'slow' );
+	_turnTimeout = setTimeout(updateTime, 250);
+	jumpTo(true);
 	$('#word').focus();
 }
 
 function updateTime() {
-	_time += 100;
+	_time += 250;
     var elapsed = _turnTime - Math.floor(_time / 1000);
 
     //to keep it true to time
@@ -153,9 +163,9 @@ function updateTime() {
     $countdown.text(elapsed);
 
     if(elapsed <= 0) {
-		_socket.emit('timeLimit');
+		_socket.emit('timeLimit', _name);
     } else {
-        _turnTimeout = setTimeout(updateTime, (100 - diff));
+        _turnTimeout = setTimeout(updateTime, (250 - diff));
     }
 }
 
@@ -183,6 +193,32 @@ function setupEvents() {
 		verifyAndSend(val, true);
 		return false;
     });
+
+    $('.jump').on('click', function(e) {
+		e.preventDefault();
+		if(_live) {
+			$('.start').hide();
+			$('.live').show();
+			jumpTo();
+			_live = false;
+		} else {
+			$('.live').hide();
+			$('.start').show();
+			jumpTo(true);
+			_live = true;
+		}
+    });
+    $(window).on('blur', function(e) {
+		_blur = true;
+    });
+    $(window).on('focus', function(e) {
+		if(_blur) {
+			_blur = false;
+			if(_name) {
+				_socket.emit('checkStatus', _name);
+			}
+		}
+	});
 }
 
 function displayMessage(text) {
@@ -216,7 +252,6 @@ function verifyAndSend(val, para) {
 
 function joinPrompt(p) {
 	apprise(p + ' (3-15 characters)', {'input':'nomdeplume', 'textOk':'Join'}, function(r) {
-
 		if(r.length > 0) {
 			var tempName = r.trim();
 			var check = /^[a-zA-Z]*$/.test(r);
@@ -258,7 +293,7 @@ function setupSelectors() {
 	$yourTurn = $('.yourTurn');
 	$wordsLeftCount = $('.wordsLeftCount');
 
-	_inputHTML = '<span class="newText"><input id="word" placeholder="enter..." maxlength="23"></input></span>';
+	_inputHTML = '<span class="newText"><input id="word" placeholder="..." maxlength="23"></input></span>';
 }
 
 function addWord(data) {
@@ -286,6 +321,11 @@ function bindWordCheck() {
 		if(split.length === 1) {
 			var word = split[0];
 				wordLength = split[0].length;
+			
+			//dynamically change input box size for real looking result
+			var newWidth = 30 + wordLength * 16;
+			$('#word').css('width', newWidth);
+
 			//make sure it is not nothing
 			if(wordLength > 0) {
 				$('.contribute, .newParaButton').addClass('btn-primary');
@@ -294,7 +334,7 @@ function bindWordCheck() {
 				var lastChar = word.charAt(wordLength-1);
 				
 				//TODO use regex!
-				if(lastChar === '.' || lastChar === '!' || lastChar === '?') {
+				if(lastChar === '.' || lastChar === '!' || lastChar === '?' || lastChar === '"' || lastChar === ':') {
 					$newParagraph.show();
 				} else {
 					$newParagraph.hide();
@@ -332,3 +372,10 @@ function addInputBox() {
 	bindWordCheck();
 }
 
+function jumpTo(bottom) {
+	var where = 0;
+	if(bottom) {
+		where = $(document).height();
+	}
+	$('html, body').animate({ scrollTop: where }, 'slow' );
+}

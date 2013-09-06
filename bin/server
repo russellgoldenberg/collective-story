@@ -91,7 +91,7 @@ helpers.connectMongoose(app, useMongo, function(databases) {
 		storyModel.remove({}, function(err) {
 			if(err) { console.log(err); }
 			else {
-				var story = new storyModel({paragraphs: ['Once '], index: 0, authors: {'codenberg': 1}, wordCount: 1});
+				var story = new storyModel({paragraphs: ['Once '], index: 0, authors: {'codenberg': 1}, wordCount: 1, wordLimit: 200});
 				story.save(function(err, suc) {
 					if(err) {
 						console.log(err);
@@ -108,7 +108,7 @@ helpers.connectMongoose(app, useMongo, function(databases) {
 			if(err) {
 				console.log(err);
 			} else if(!result) {
-				var story = new storyModel({paragraphs: ['Once '], index: 0, authors: {'codenberg': 1}, wordCount: 1});
+				var story = new storyModel({paragraphs: ['Once '], index: 0, authors: {'codenberg': 1}, wordCount: 1, wordLimit: 200});
 				story.save(function(err, suc) {
 					if(err) {
 						console.log(err);

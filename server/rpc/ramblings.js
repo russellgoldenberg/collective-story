@@ -1,4 +1,3 @@
-var _wordLimit = 10;
 var self = module.exports = {
 	
 	users: {},
@@ -13,7 +12,7 @@ var self = module.exports = {
 	userModel: null,
 	storyModel: null,
 	helpers: null,
-	timeoutLength: 25000,
+	timeoutLength: 10000,
 
 	init: function(io, helpers) {
 		console.log('------ BLAST OFF ------'.rainbow);
@@ -45,10 +44,10 @@ var self = module.exports = {
 
 			var data = {
 				paragraphs: self.story.paragraphs,
-				timer: self.timeoutLength,
+				timer: self.timeoutLength - 5000,
 				count: self.queue.length,
 				wordCount: self.story.wordCount,
-				wordLimit: _wordLimit
+				wordLimit: self.story.wordLimit
 			};
 
 			//welcome the noob
@@ -70,17 +69,19 @@ var self = module.exports = {
 				//add to list of users
 				self.users[name] = socket;
 
-				socket.emit('joinResponse', {name: name, join: true});
-
 				//add to queue for turn
 				self.queue.push(name);
+
+				socket.emit('joinResponse', {name: name, join: true});
 
 				//if no one is going, pop new
 				if(!self.currentTurn) {
 					self.popUser();
+				} else {
+					self.sendQueue();
 				}
 			} else {
-				socket.emit('joinResponse', {name: name, join:false});
+				socket.emit('joinResponse', {name: name, join: false});
 			}
 		});
 	},
@@ -91,7 +92,6 @@ var self = module.exports = {
 			count: self.queue.length,
 			turn: self.currentTurn
 			};
-		// console.log('sendQueue:', data);
 		self.io.sockets.emit('sendQueue', data);
 	},
 
@@ -137,7 +137,7 @@ var self = module.exports = {
 					else {
 						//start new story
 						var newStory = false;
-						if(self.story.wordCount >= _wordLimit) {
+						if(self.story.wordCount >= self.story.wordLimit) {
 							newStory = true;
 						}
 						var sendData = {
@@ -170,38 +170,59 @@ var self = module.exports = {
 			}
 		});
 
-		socket.on('timeLimit', function () {
-			self.warnOrBoot(socket, name);
-			clearTimeout(self.queueTimeout);
-			self.popUser();
+		socket.on('timeLimit', function (name) {
+			if(name === self.currentTurn) {
+				clearTimeout(self.queueTimeout);
+				self.warnOrBoot(socket, name);
+			}
+		});
+
+		socket.on('checkStatus', function (name) {
+			if(self.users[name]) {
+				var data = {
+					queue: self.queue,
+					count: self.queue.length,
+					turn: self.currentTurn
+				};
+				socket.emit('sendQueue', data);
+			} else {
+				socket.emit('boot');
+			}
 		});
 	},
 
 	warnOrBoot: function(socket, name) {
 		//if they were already warned, boot em
-		if(self.users[name].warning) {
+		if(self.users[name]) {
+			if(self.users[name].warning) {
 			self.users[name].emit('boot');
-			deleteUser(name);
-		} else {
-			self.users[name].emit('warning');
-			self.users[name].warning = true;
+			self.deleteUser(name);
+			} else {
+				self.users[name].emit('warning');
+				self.users[name].warning = true;
+			}
+			self.popUser();
 		}
 	},
 
 	popUser: function() {
-		var name = self.queue[0];
-		self.currentTurn = name;
+		if(self.queue.length > 0) {
+			var name = self.queue[0];
+			self.currentTurn = name;
 
-		//only do shuffling of more than 1 person
-		if(self.getUserCount() > 1) {
-			self.queue = self.queue.slice(1,self.queue.length);
-			self.queue.push(name);
-		}
+			//only do shuffling of more than 1 person
+			if(self.getUserCount() > 1) {
+				self.queue = self.queue.slice(1,self.queue.length);
+				self.queue.push(name);
+			}
 
-		if(self.users[name]) {
-			self.queueTimeout = setTimeout(self.unresponsive, self.timeoutLength);
+			if(self.users[name]) {
+				self.queueTimeout = setTimeout(function(name) {
+					self.unresponsive();
+				}, self.timeoutLength);
+			}
+			self.sendQueue();
 		}
-		self.sendQueue();
 	},
 
 	spliceQueue: function(name) {
@@ -218,27 +239,30 @@ var self = module.exports = {
 	unresponsive: function(name) {
 		//TODO add warning
 		clearTimeout(self.queueTimeout);
-		console.log('unresponsive:', self.currentTurn.red);
+		console.log('unresponsive:'.red, self.currentTurn);
 		self.deleteUser(self.currentTurn);
 		self.currentTurn = null;
 		self.popUser();
 	},
 
 	deleteUser: function(name) {
-		delete self.users[name];
-		self.spliceQueue(name);
+		if(self.users[name]) {
+			delete self.users[name];
+			self.spliceQueue(name);
+		}
 	},
 
 	newStory: function() {
 		self.currentIndex += 1;
-		var story = new self.storyModel({paragraphs: [''], index: self.currentIndex, authors: {}, wordCount: 0});
+		var randomLimit = 100 + Math.floor(Math.random() * 800);
+		var story = new self.storyModel({paragraphs: [''], index: self.currentIndex, authors: {}, wordCount: 0, wordLimit: randomLimit});
 		story.save(function(err,result) {
 			if(err) { console.log(err); }
 			else {
 				self.story = result;
 				self.currentIndex = self.story.index;
 				self.currentParagraph = self.story.paragraphs.length - 1;
-				self.io.sockets.emit('newStory');
+				self.io.sockets.emit('newStory', self.story.wordLimit);
 				self.popUser();
 			}
 		});

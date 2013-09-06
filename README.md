@@ -1,7 +1,8 @@
 # Ramblings
-An experiment in massively multiplayer online literature generation
+An experiment in real-time collaborative literature generation
 
 ##TODO
+weird timeout thing (does it stop when you move tabs?)
 
 ##VERSION 1
 Predefined short story word length
@@ -11,4 +12,4 @@ Infinite story
 
 ##VERSION 3
 full sentences
-email turn
+email turn based

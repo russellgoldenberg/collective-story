@@ -48,21 +48,28 @@ block content
                                 span.countdown 
                                 |  seconds remaining
                             p.message.onDeck You are up next, get ready!
-                            p.message.booted You have been booted
+                            p.message.booted You have been booted. Refresh page.
                             p.message.endOfStory End of story. Starting fresh...  
                         
                 .header
                     h1 Ramblings
-                    p An experiment in massively multiplayer online literature generation   
+                    p.full An experiment in real-time collaborative literature generation
+                    p.half An experiment in literature generation
         .container
             .row
-                .col-md-8.col-md-offset-2.storyContainer
+                .col-md-10.col-md-offset-1.storyContainer
                     p.newParagraph
                         button.newParaButton.btn.btn-primary &para;
             .row                        
                 .col-md-12
                     p.contribution
                         button.contribute.btn Contribute
-
+        .jump
+            p.live
+                span.glyphicon.glyphicon-flash
+                | Jump to Live
+            p.start
+                span.glyphicon.glyphicon-flash
+                | Jump to Start
     script(src='#{cloudPath}libs/socket.js')
     script(src='#{cloudPath}libs/ramblings.js')
