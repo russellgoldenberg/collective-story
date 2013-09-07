@@ -94,7 +94,6 @@ var self = module.exports = {
 		});
 
 		socket.on('getStory', function(index) {
-			console.log('sget', index);
 			self.storyModel
 				.where('index').equals(index)
 				.findOne(function(err, result) {
@@ -124,7 +123,6 @@ var self = module.exports = {
 
 	setupEvents: function(socket, name) {
 		socket.on('disconnect', function () {
-			console.log('deleting:', name.red);
 			self.deleteUser(name);
 			if(self.currentTurn === name) {
 				clearTimeout(self.queueTimeout);
@@ -223,6 +221,7 @@ var self = module.exports = {
 	},
 
 	popUser: function() {
+		console.log('popUser', self.queue);
 		if(self.queue.length > 0) {
 			var name = self.queue[0];
 			self.currentTurn = name;
@@ -234,8 +233,10 @@ var self = module.exports = {
 			}
 
 			if(self.users[name]) {
-				self.queueTimeout = setTimeout(function(name) {
-					self.unresponsive();
+				clearTimeout(self.queueTimeout);
+				self.queueTimeout = setTimeout(function() {
+					console.log(name);
+					self.unresponsive(name);
 				}, self.timeoutLength);
 			}
 			self.sendQueue();
@@ -255,15 +256,19 @@ var self = module.exports = {
 
 	unresponsive: function(name) {
 		//TODO add warning
-		clearTimeout(self.queueTimeout);
-		console.log('unresponsive:'.red, self.currentTurn);
-		self.deleteUser(self.currentTurn);
-		self.currentTurn = null;
-		self.popUser();
+		console.log('unresponsive', name, self.currentTurn);
+		if(name === self.currentTurn) {
+			clearTimeout(self.queueTimeout);
+			console.log('unresponsive:'.magenta, self.currentTurn);
+			self.deleteUser(self.currentTurn);
+			self.currentTurn = null;
+			self.popUser();
+		}
 	},
 
 	deleteUser: function(name) {
 		if(self.users[name]) {
+			console.log('deleting:'.red, name);
 			delete self.users[name];
 			self.spliceQueue(name);
 		}

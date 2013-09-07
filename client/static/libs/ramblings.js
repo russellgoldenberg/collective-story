@@ -8,7 +8,8 @@ var _socket,
 	_wordLimit,
 	_inputHTML,
 	_live,
-	_blur;
+	_blur,
+	_myTurn;
 
 var $storyContainer,
 	$countAuthors,
@@ -44,7 +45,7 @@ var $storyContainer,
 
 			//turn queue from server
 			_socket.on('sendQueue', function (data) {
-				console.log('send', data);
+				console.log('send', data.queue, data.turn);
 				updateAuthorCount(data.count);
 				if(data.turn === _name) {
 					startTurn();
@@ -68,7 +69,6 @@ var $storyContainer,
 				updateWordCount(data.wordCount);
 
 				if(data.newParagraph) {
-					console.log('add para');
 					addParagraph(data.currentParagraph);
 				}
 			});
@@ -91,7 +91,7 @@ var $storyContainer,
 			_socket.on('boot', function () {
 				console.log('booted');
 				_name = null;
-				displayMessage('You have timed out twice, you are now a mere spectator.');
+				displayMessage('You have been unresponsive or missed two turns, you are now a mere spectator.');
 				$message.hide();
 				$contribution.hide();
 				$newParagraph.hide();
@@ -101,6 +101,7 @@ var $storyContainer,
 
 			//warn user if they missed a turn
 			_socket.on('warning', function () {
+				console.log('warning');
 				displayMessage('You took too long to contribute during your turn, back of the line!');
 			});
 
@@ -141,15 +142,19 @@ function findName(queue) {
 }
 
 function startTurn() {
-	$message.hide();
-	$countdown.text(_turnTime);
-	$yourTurn.show();
-	$('.newText').show();
-	$contribution.show();
-	_time = 0;
-	_startTime = new Date().getTime();
-	_turnTimeout = setTimeout(updateTime, 250);
-	jumpTo(true);
+	//if already your turn (returning focus) then dont do anything
+	if(!_myTurn) {
+		_myTurn = true;
+		$message.hide();
+		$countdown.text(_turnTime);
+		$yourTurn.show();
+		$('.newText').show();
+		$contribution.show();
+		_time = 0;
+		_startTime = new Date().getTime();
+		_turnTimeout = setTimeout(updateTime, 250);
+		jumpTo(true);
+	}
 	$('#word').focus();
 }
 
@@ -164,6 +169,7 @@ function updateTime() {
 
     if(elapsed <= 0) {
 		_socket.emit('timeLimit', _name);
+		_myTurn = false;
     } else {
         _turnTimeout = setTimeout(updateTime, (250 - diff));
     }
@@ -246,6 +252,7 @@ function verifyAndSend(val, para) {
 	};
 
 	clearTimeout(_turnTimeout);
+	_myTurn = false;
 	$('.contribute, .newParaButton').removeClass('btn-primary');
 	_socket.emit('contribute', data);
 }

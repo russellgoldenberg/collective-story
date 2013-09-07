@@ -836,6 +836,7 @@ th.visible-print,td.visible-print{display:none !important}
 @media print{.visible-print{display:block !important}tr.visible-print{display:table-row !important} th.visible-print,td.visible-print{display:table-cell !important} .hidden-print{display:none !important}tr.hidden-print{display:none !important} th.hidden-print,td.hidden-print{display:none !important}}body{padding-top:300px}
 .header{text-align:center;text-transform:uppercase}.header h1{font-size:3em}.header h1 a{color:#222}
 .header .half{display:none}
+.mainGameContainer{margin-bottom:80px}
 .info{text-transform:uppercase}.info .message{color:#555}
 .info .yourTurn{display:none}.info .yourTurn .countdown{font-size:1.8em;color:#7cccc9}
 .info .inQueue{display:none}.info .inQueue .countAhead{font-size:1.8em;color:#f52e47}
