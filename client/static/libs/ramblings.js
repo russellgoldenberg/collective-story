@@ -42,10 +42,6 @@ var $storyContainer,
 				fillStory();
 			});
 
-			_socket.on('sock', function(soc) {
-				console.log(soc);
-			});
-
 			//turn queue from server
 			_socket.on('sendQueue', function (data) {
 				console.log('send', data);

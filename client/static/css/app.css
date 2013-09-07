@@ -859,4 +859,5 @@ th.visible-print,td.visible-print{display:none !important}
 @media (min-width:768px){.navbar-collapse{border-bottom:none}}@media screen and (max-width:768px){.header p.full{display:none} .header p.half{display:block}}.jump{position:fixed;width:180px;top:305px;right:-140px;background:#555;color:white;opacity:0.3;cursor:pointer;z-index:1050;-moz-transition:all .5s;-webkit-transition:all .5s;transition:all .5s}.jump p{padding:10px;margin:0}.jump p span{margin-left:2px;margin-right:20px}
 .jump .start{display:none}
 .jump:hover{opacity:1;right:0}
-a{font-weight:700}
+a{font-weight:700}a:hover{text-decoration:none;color:#999}
+.archivedStory{margin-top:-50px}

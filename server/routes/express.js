@@ -27,6 +27,14 @@ var self = module.exports = {
 			});
 		});
 
+		app.get('/archivedStory/:index', function(req, res) {
+			res.render('archivedStory', {
+				title: 'Ramblings',
+				globals: globals,
+				storyIndex: req.params.index  
+			});
+		});
+
 		// 404'd
 		app.use(function(req, res, next) {
 			// res.send(404, 'Sorry cant find that!');

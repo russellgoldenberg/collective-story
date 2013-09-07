@@ -87,9 +87,18 @@ var self = module.exports = {
 		socket.on('listStories', function() {
 			self.storyModel
 				.where('index').gte(0)
-				.select('index wordCount')
+				.select('index wordCount authors')
 				.find(function(err, result) {
 					socket.emit('stories', result);
+				});
+		});
+
+		socket.on('getStory', function(index) {
+			console.log('sget', index);
+			self.storyModel
+				.where('index').equals(index)
+				.findOne(function(err, result) {
+					socket.emit('story', result);
 				});
 		});
 	},
