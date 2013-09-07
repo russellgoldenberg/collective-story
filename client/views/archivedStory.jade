@@ -1,44 +1,13 @@
 extends includes/_layout
 
 block content
-    #wrap
-        //- .navbar.navbar-default.navbar-fixed-top
-        //-     .container
-        //-         .navbar-header
-        //-             button.navbar-toggle(type="button", data-toggle="collapse", data-target=".navbar-collapse")
-        //-                 span.icon-bar
-        //-                 span.icon-bar
-        //-                 span.icon-bar
-        //-         .collapse.navbar-collapse
-        //-             ul.nav.navbar-nav.pull-right
-        //-                 li
-        //-                     a(href="/") About
-        //-                 li
-        //-                     a(href="/") Archives
-        .navbar.navbar-default.navbar-fixed-top
-            .container
-                .navbar-header
-                    button.navbar-toggle(type='button', data-toggle='collapse', data-target='.navbar-collapse')
-                        span.icon-bar
-                        span.icon-bar
-                        span.icon-bar
-                .navbar-collapse.collapse
-                    ul.nav.navbar-nav.navbar-right
-                        li
-                            a(href='/about') About
-                        li
-                            a(href='/archives') Archives
-                .header
-                    h1 
-                        a(href='/') Ramblings
-                    p An experiment in real-time collaborative literature generation
-        .container
-            .row
-                .col-md-8.col-md-offset-2.archivedStory.description(data-storyIndex='#{storyIndex}')
+    .container
+        .row
+            .col-md-8.col-md-offset-2.archivedStory.description(data-storyIndex='#{storyIndex}')
 
-            .row
-                .col-md-12
-                    p(style='text-align:center; margin-top: 40px;')
-                        a(href='/archives') Back
+        .row
+            .col-md-12
+                p(style='text-align:center; margin-top: 40px;')
+                    a(href='/archives') Back
     script(src='#{cloudPath}libs/socket.js')
     script(src='#{cloudPath}libs/archived-story.js')

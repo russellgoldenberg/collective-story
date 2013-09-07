@@ -1,48 +1,16 @@
 extends includes/_layout
 
 block content
-    #wrap
-        //- .navbar.navbar-default.navbar-fixed-top
-        //-     .container
-        //-         .navbar-header
-        //-             button.navbar-toggle(type="button", data-toggle="collapse", data-target=".navbar-collapse")
-        //-                 span.icon-bar
-        //-                 span.icon-bar
-        //-                 span.icon-bar
-        //-         .collapse.navbar-collapse
-        //-             ul.nav.navbar-nav.pull-right
-        //-                 li
-        //-                     a(href="/") About
-        //-                 li
-        //-                     a(href="/") Archives
-        .navbar.navbar-default.navbar-fixed-top
-            .container
-                .navbar-header
-                    button.navbar-toggle(type='button', data-toggle='collapse', data-target='.navbar-collapse')
-                        span.icon-bar
-                        span.icon-bar
-                        span.icon-bar
-                .navbar-collapse.collapse
-                    ul.nav.navbar-nav.navbar-right
-                        li
-                            a(href='/about') About
-                        li
-                            a(href='/archives') Archives
-                .header
-                    h1 
-                        a(href='/') RAMBLINGS
-                    p.full AN EXPERIMENT IN REAL-TIME COLLABORATIVE LITERATURE GENERATION
-                    p.half AN EXPERIMENT IN LITERATURE GENERATION
-        .container
-            .row
-                .col-md-8.col-md-offset-2.description
-                    p Welcome to the archives.  Here you can explore all stories created with Ramblings.
-            .row
-                .col-md-8.col-md-offset-2.storyList
+    .container
+        .row
+            .col-md-8.col-md-offset-2.description
+                p Welcome to the archives.  Here you can explore all stories created with Ramblings.
+        .row
+            .col-md-8.col-md-offset-2.storyList
 
-            .row
-                .col-md-12
-                    p(style='text-align:center; margin-top: 40px;')
-                        a(href='/') Play
+        .row
+            .col-md-12
+                p(style='text-align:center; margin-top: 40px;')
+                    a(href='/') Play
     script(src='#{cloudPath}libs/socket.js')
     script(src='#{cloudPath}libs/archives.js')                        
