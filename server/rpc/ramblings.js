@@ -12,7 +12,7 @@ var self = module.exports = {
 	userModel: null,
 	storyModel: null,
 	helpers: null,
-	timeoutLength: 10000,
+	timeoutLength: 30000,
 
 	init: function(io, helpers) {
 		console.log('------ BLAST OFF ------'.rainbow);
