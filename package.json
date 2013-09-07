@@ -29,5 +29,5 @@
     "start": "node ./bin/server"
   },
   "subdomain": "ramblings",
-  "version": "0.0.0"
+  "version": "0.0.0-8"
 }

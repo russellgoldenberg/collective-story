@@ -1,48 +1,17 @@
 extends includes/_layout
 
 block content
-    #wrap
-        //- .navbar.navbar-default.navbar-fixed-top
-        //-     .container
-        //-         .navbar-header
-        //-             button.navbar-toggle(type="button", data-toggle="collapse", data-target=".navbar-collapse")
-        //-                 span.icon-bar
-        //-                 span.icon-bar
-        //-                 span.icon-bar
-        //-         .collapse.navbar-collapse
-        //-             ul.nav.navbar-nav.pull-right
-        //-                 li
-        //-                     a(href="/") About
-        //-                 li
-        //-                     a(href="/") Archives
-        .navbar.navbar-default.navbar-fixed-top
-            .container
-                .navbar-header
-                    button.navbar-toggle(type='button', data-toggle='collapse', data-target='.navbar-collapse')
-                        span.icon-bar
-                        span.icon-bar
-                        span.icon-bar
-                .navbar-collapse.collapse
-                    ul.nav.navbar-nav.navbar-right
-                        li
-                            a(href='/about') About
-                        li
-                            a(href='/archives') Archives
-                .header
-                    h1 
-                        a(href='/') Ramblings
-                    p An experiment in real-time collaborative literature generation
-        .container
-            .row
-                .col-md-8.col-md-offset-2.description
-                    p Hello word enthusiast. Ramblings is a real-time literary experiment/game that enables users to collaboratively assemble a story, one word at a time.<br><br>This experiment was built with Node, a handful of sockets, some sake, and an attention-seeking cat*.
-                    p To contribute, click <span>Join the Fun</span> and choose a pen name, then follow the queue as indicated in the top left.  A sound will alert you when you are up in case you doze off in anticipation.
-                    p You will have 25 seconds to enter a single word.  The <span>Contribute</span> button will turn green when you have satisifed the requirements (no spaces and not nothing).  If you choose to end the word with a period, exclamation, or question mark or quotation, a New paragraph button - <span>&para;</span> - will appear.  Pressing it instead of <span>Contribute</span> will both submit your word AND start the next user on a fresh paragraph.
-                    p For questions and love: 
-                        a(href='http://twitter.com/codenberg', target='_blank') @codenberg
-                    p.smokey *Any bugs are because she stepped on the keyboard. I will pass them along.
-            .row
-                .col-md-12
-                    p(style='text-align:center; margin-top: 40px;')
-                        a(href='/') Play
+    .container
+        .row
+            .col-md-8.col-md-offset-2.description
+                p Hello word enthusiast. Ramblings is a real-time literary experiment/game that enables users to collaboratively assemble a story, one word at a time.<br><br>This experiment was built with Node, a handful of sockets, some sake, and an attention-seeking cat*.
+                p To contribute, click <span>Play</span> and choose a pen name, then follow the queue as indicated in the top left.  A sound will alert you when you are up in case you doze off in anticipation.
+                p You will have 25 seconds to enter a single word.  The <span>Contribute</span> button will turn green when you have satisifed the requirements (no spaces and not nothing).  If you choose to end the word with a period, exclamation, or question mark or quotation, a New paragraph button - <span>&para;</span> - will appear.  Pressing it instead of <span>Contribute</span> will both submit your word AND start the next user on a fresh paragraph.
+                p For questions and love: 
+                    a(href='http://twitter.com/codenberg', target='_blank') @codenberg
+                p.smokey *Any bugs are because she stepped on the keyboard. I will pass them along.
+        .row
+            .col-md-12
+                p(style='text-align:center; margin-top: 40px;')
+                    a(href='/') Play
 

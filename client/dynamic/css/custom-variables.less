@@ -24,8 +24,8 @@
 // Brand colors
 // -------------------------
 
-@brand-primary:         #7CCCC9;
-@brand-success:         #89CA64;
+@brand-primary:         @gray;
+@brand-success:         @yellow;
 @brand-warning:         #f0ad4e;
 @brand-danger:          #d9534f;
 @brand-info:            #485671;
@@ -33,22 +33,24 @@
 // Scaffolding
 // -------------------------
 
-@body-bg:               white;
-@text-color:            @gray-dark;
+@body-bg:               @tan;
+@text-color:            @gray-darker;
 
 // Links
 // -------------------------
 
-@link-color:            @gray-darker;
+@link-color:            @gray-light;
 @link-hover-color:      darken(@link-color, 15%);
 
 // Typography
 // -------------------------
 
-@font-family-sans-serif:  "Montserrat" "Helvetica Neue", Helvetica, Arial, sans-serif;
-@font-family-serif:       "Lora", Georgia, "Times New Roman", Times, serif;
+@font-family-sans-serif:  "Open Sans" "Helvetica Neue", Helvetica, Arial, sans-serif;
+@font-family-serif:       "Old Standard TT", Georgia, "Times New Roman", Times, serif;
+@font-family-serif1:       "Merriweather", Georgia, "Times New Roman", Times, serif;
+@font-family-serif2:       "PT Serif", Georgia, "Times New Roman", Times, serif;
 @font-family-monospace:   Monaco, Menlo, Consolas, "Courier New", monospace;
-@font-family-base:        @font-family-sans-serif;
+@font-family-base:        @font-family-serif;
 
 @font-size-base:          16px;
 @font-size-large:         ceil(@font-size-base * 1.25); // ~18px
@@ -58,7 +60,7 @@
 @line-height-computed:    floor(@font-size-base * @line-height-base); // ~20px
 
 @headings-font-family:    @font-family-serif;
-@headings-font-weight:    700;
+@headings-font-weight:    800;
 @headings-line-height:    1.1;
 
 // Iconography
@@ -245,7 +247,7 @@
 @navbar-height:                    50px;
 @navbar-margin-bottom:             @line-height-computed;
 @navbar-default-color:             @gray;
-@navbar-default-bg:                white;
+@navbar-default-bg:                @body-bg;
 @navbar-default-border:            none;
 @navbar-border-radius:             @border-radius-base;
 @navbar-padding-horizontal:        floor(@grid-gutter-width / 2);

@@ -23,7 +23,7 @@ var _socket;
 
 function showStory(story) {
 	for(var i = 0; i < story.paragraphs.length; i++) {
-		var HTML = '<h3>Story #' + story.index + '<h3>';
+		var HTML = '<h3>Story #' + story.index + '</h3>';
 		HTML += '<p>' + story.paragraphs[i] + '</p>';
 		$('.archivedStory').append(HTML);
 	}
