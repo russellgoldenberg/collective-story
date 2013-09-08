@@ -1,8 +1,7 @@
 {
 	"PORT": 8000,
-	"USE_MONGO": true,
-	"MONGO_URL": "mongodb://localhost/story",
-	"MONGO_URL_JITSU": "huh",
+	"MONGO_URL_LOCAL": "mongodb://localhost/story",
+	"MONGO_URL_JITSU": false,
 	"CLOUD_PATH": "/",
 	"BASE_URL": "http://localhost:8000",
 	"RESET": true

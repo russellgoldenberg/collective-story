@@ -30,8 +30,11 @@ var self = module.exports = {
 		// connect to database
 		if(!self.mongooseConnected && useMongo) {
 			console.log('* * * Starting MongoDB * * *'.yellow);
-			self.db = mongoose.createConnection(config.get('MONGO_URL'));
-			// self.db = mongoose.createConnection(config.get('MONGO_URL_JITSU'));
+			if(config.get('MONGO_URL_JITSU')) {
+				self.db = mongoose.createConnection(config.get('MONGO_URL_JITSU'));	
+			} else {
+				self.db = mongoose.createConnection(config.get('MONGO_URL_LOCAL'));
+			}
 			self.db.on('error', console.error.bind(console, ' CONNECTION ERROR: '.red.inverse));
 			self.db.once('open', function () {
 				console.log('* * * connection succesful * * *'.yellow);
