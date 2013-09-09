@@ -91,6 +91,7 @@ var $storyContainer,
 			_socket.on('boot', function () {
 				console.log('booted');
 				_name = null;
+				_myTurn = false;
 				displayMessage('You have been unresponsive or missed two turns, you are now a mere spectator.');
 				$message.hide();
 				$contribution.hide();
@@ -102,6 +103,7 @@ var $storyContainer,
 			//warn user if they missed a turn
 			_socket.on('warning', function () {
 				console.log('warning');
+				_myTurn = false;
 				displayMessage('You took too long to contribute during your turn, back of the line!');
 			});
 
