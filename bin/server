@@ -12,6 +12,7 @@ var rootDir = process.cwd(),
 	io,
 
 	config = require(rootDir + '/config'),
+	nodeEnv = config.get('ENVIRONMENT'),
 	useMongo = config.get('USE_MONGO'),
 
 	routes = require(rootDir + '/server/routes/express'),
@@ -26,7 +27,7 @@ var rootDir = process.cwd(),
 
 console.log('~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~'.red);
 console.log('~ - ~ - ~ - ~ - ~ RAMBLINGS ~ - ~ - ~ - ~ - ~'.red);
-console.log('~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~'.red); 
+console.log('~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~'.red);
 helpers.connectMongoose(app, useMongo, function(databases) {
 
 	app.configure(function() {

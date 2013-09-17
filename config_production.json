@@ -1,9 +1,9 @@
 {
 	"PORT": 8000,
-	"MONGO_URL_LOCAL": "mongodb://localhost/story",
+	"MONGO_URL_LOCAL": "mongodb://ip-10-202-153-133.ec2.internal/ramblings",
 	"USE_MONGO": true,
 	"MONGO_URL_JITSU": false,
 	"CLOUD_PATH": "/",
 	"BASE_URL": "http://localhost:8000",
-	"RESET": true
+	"RESET": false
 }
